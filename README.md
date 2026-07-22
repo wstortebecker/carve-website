@@ -97,6 +97,13 @@ Design north star: warm, editorial, Scandinavian-studio calm. Never cold grey,
 never a generic-SaaS template. The only accent color is terracotta, used
 sparingly.
 
+The marketing site should remain product-led and recognizably ecommerce-coded:
+real product imagery, catalog fields, PDPs, search results and analytics should
+do the explanatory work. Do not default to decorative eyebrow copy above H1s
+or section headlines, and do not frame generic helper copy with a short line,
+dot or orb. Compact uppercase labels are reserved for functional interface
+metadata such as fields, states, SKUs and table headers.
+
 ---
 
 ## What was removed vs. the main platform
