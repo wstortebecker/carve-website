@@ -1,0 +1,355 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Pricing | Carve</title>
+  <meta name="description" content="The complete Carve product-data engine, priced by the size of your Shopify catalog.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@1,300;1,400&amp;family=DM+Sans:wght@300;400;500;600&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --cream:#f3ede4; --cream-2:#e8dfd3; --paper:#fffdf8; --paper-2:#faf6ef;
+      --ink:#1b1511; --ink-2:#28201b; --copy:#584d45; --quiet:#7c6e64;
+      --line:rgba(28,22,18,.13); --line-strong:rgba(28,22,18,.24);
+      --terra:#aa5834; --terra-dark:#7d3d26; --terra-soft:#ead2c2;
+      --green:#39735a; --green-soft:#deebe3;
+      --serif:'Cormorant Garamond',Georgia,serif;
+      --sans:'DM Sans',-apple-system,BlinkMacSystemFont,sans-serif;
+      --mono:'JetBrains Mono',monospace;
+      --shadow:0 26px 70px rgba(49,33,23,.10);
+    }
+    * { box-sizing:border-box }
+    html { scroll-behavior:smooth }
+    body { margin:0; overflow-x:hidden; background:var(--cream); color:var(--ink); font-family:var(--sans); -webkit-font-smoothing:antialiased }
+    body::before { content:""; position:fixed; inset:0; z-index:100; pointer-events:none; opacity:.013; background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.88' numOctaves='4' stitchTiles='stitchTiles'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E") }
+    a { color:inherit; text-decoration:none }
+    button,input { font:inherit; color:inherit }
+    button { cursor:pointer }
+    img { display:block; max-width:100% }
+    .shell { width:min(100% - 48px,1320px); margin-inline:auto }
+    .mono { font-family:var(--mono); font-variant-numeric:tabular-nums }
+
+    .nav { height:66px; border-bottom:1px solid var(--line); background:rgba(243,237,228,.94) }
+    .nav-inner { height:100%; display:flex; align-items:center; gap:28px }
+    .logo img { width:112px }
+    .nav-links { display:flex; gap:6px }
+    .nav-links a { padding:9px 11px; border-radius:7px; color:var(--copy); font-size:13px }
+    .nav-links a.active { background:rgba(28,22,18,.05); color:var(--ink) }
+    .nav-cta { margin-left:auto; min-height:39px; padding:0 19px; display:inline-flex; align-items:center; border-radius:999px; background:var(--terra); color:#fff; font-size:12px; font-weight:500 }
+    .button { min-height:48px; padding:0 20px; display:inline-flex; align-items:center; justify-content:center; border:1px solid var(--line-strong); border-radius:9px; background:transparent; font-size:13px; font-weight:500; transition:background .18s,border-color .18s,color .18s,transform .18s }
+    .button:hover { background:rgba(28,22,18,.045) }
+    .button:active { transform:scale(.985) }
+    .button.primary { border-color:var(--terra); background:var(--terra); color:#fff }
+    .button.primary:hover { background:var(--terra-dark) }
+
+    /* Hero */
+    .hero { padding:50px 0 34px; text-align:center; background:radial-gradient(circle at 50% 30%,rgba(255,253,248,.78),transparent 48%),linear-gradient(180deg,#f9f5ee 0,var(--cream) 100%) }
+    .hero h1 { max-width:900px; margin:0 auto; font:300 italic clamp(58px,5.5vw,78px)/.95 var(--serif); letter-spacing:-.048em }
+    .hero p { max-width:820px; margin:19px auto 0; color:var(--copy); font-size:16px; font-weight:300; line-height:1.62 }
+
+    /* Pricing showcase */
+    .plans { padding:0 0 104px }
+    .plan-grid { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); overflow:hidden; border:1px solid var(--line-strong); border-radius:18px; background:var(--paper); box-shadow:var(--shadow) }
+    .plan { position:relative; min-width:0; min-height:478px; padding:25px 25px 23px; display:flex; flex-direction:column; border-right:1px solid var(--line); background:var(--paper) }
+    .plan:last-child { border-right:0 }
+    .plan.featured { background:linear-gradient(180deg,rgba(234,209,193,.68),var(--paper) 54%) }
+    .plan.featured::before { content:""; position:absolute; inset:0 0 auto; height:4px; background:var(--terra) }
+    .plan-name-row { min-height:23px; display:flex; align-items:center; gap:10px }
+    .plan-name { margin:0; font-size:15px; font-weight:600 }
+    .recommended { margin-left:auto; padding:6px 8px; border-radius:999px; background:var(--terra); color:white; font:500 8px/1 var(--mono); text-transform:uppercase }
+    .plan-intro { min-height:68px; margin:10px 0 0; color:var(--copy); font-size:12.5px; line-height:1.53 }
+    .price { min-height:58px; margin-top:9px; display:flex; align-items:baseline; gap:6px }
+    .price strong { font:300 italic 46px/1 var(--serif); letter-spacing:-.04em; font-variant-numeric:tabular-nums }
+    .price span { color:var(--quiet); font-size:10px }
+    .price.custom strong { font-size:39px }
+    .capacity { margin:1px 0 0; padding:13px 0; display:grid; grid-template-columns:1fr auto; align-items:end; border-block:1px solid var(--line) }
+    .capacity-label { display:none }
+    .capacity strong { display:block; font-size:14px; font-weight:500 }
+    .capacity span { color:var(--quiet); font-size:10px }
+    .plan-features-title { margin:18px 0 0; color:var(--ink); font-size:10.5px; font-weight:600 }
+    .features { display:grid; gap:8px; margin:12px 0 21px; padding:0; list-style:none }
+    .features li { display:flex; gap:9px; color:var(--copy); font-size:11.5px; line-height:1.42 }
+    .features li::before { content:"✓"; flex:0 0 auto; color:var(--green); font:500 10px/1.55 var(--mono) }
+    .plan .button { width:100%; min-height:44px; margin-top:auto }
+    .plan.featured .button { border-color:var(--terra); background:var(--terra); color:white }
+    .plan.featured .button:hover { background:var(--terra-dark) }
+    .billing-note { margin:12px 2px 0; color:var(--quiet); font-size:10.5px }
+
+    /* Guarantee */
+    .guarantee { margin-top:23px; padding:18px 20px; display:grid; grid-template-columns:270px minmax(250px,.8fr) minmax(330px,1.2fr); gap:28px; align-items:center; border:1px solid var(--line-strong); border-radius:14px; background:rgba(255,253,248,.68) }
+    .guarantee h2 { margin:0; font:300 italic 30px/1 var(--serif); letter-spacing:-.025em }
+    .guarantee-measure { min-width:0; display:flex; align-items:center; gap:11px; padding-left:24px; border-left:1px solid var(--line) }
+    .guarantee-icons { display:flex; flex:0 0 auto }
+    .guarantee-icons span { width:30px; height:30px; display:grid; place-items:center; border:1px solid var(--line); border-radius:8px; background:var(--paper) }
+    .guarantee-icons span+span { margin-left:-6px }
+    .guarantee-icons img { width:16px; height:16px; object-fit:contain }
+    .guarantee-measure small { display:block; color:var(--quiet); font:500 8.5px/1.2 var(--mono); text-transform:uppercase }
+    .guarantee-measure strong { display:block; margin-top:5px; font-size:11.5px; font-weight:600 }
+    .guarantee-copy { min-width:0; padding-left:26px; border-left:1px solid var(--line) }
+    .guarantee-copy>strong { display:block; font-size:12.5px; font-weight:600 }
+    .guarantee-copy p { margin:4px 0 0; color:var(--copy); font-size:11.5px; line-height:1.5 }
+    .guarantee-terms { display:flex; gap:9px; margin-top:7px; color:var(--terra-dark); font:500 9px/1 var(--mono); white-space:nowrap }
+    .guarantee-terms span+span::before { content:"·"; margin-right:9px; color:var(--terra) }
+
+    /* All plans */
+    .engine { margin-top:42px; overflow:hidden; border-radius:18px; background:var(--paper); border:1px solid var(--line-strong) }
+    .engine-layout { display:grid; grid-template-columns:.85fr 1.15fr }
+    .engine-story { position:relative; min-height:324px; padding:36px; overflow:hidden; background:var(--terra-soft) }
+    .engine-story h2 { position:relative; z-index:2; max-width:390px; margin:0; font:300 italic 46px/.98 var(--serif); letter-spacing:-.04em }
+    .engine-story p { position:relative; z-index:2; max-width:390px; margin:16px 0 0; color:var(--terra-dark); font-size:12.5px; line-height:1.58 }
+    .engine-products { position:absolute; right:17px; bottom:-16px; width:278px; height:146px }
+    .engine-product { position:absolute; bottom:0; width:105px; height:132px; display:grid; place-items:center; border:1px solid rgba(28,22,18,.12); border-radius:11px; background:var(--paper); box-shadow:0 13px 28px rgba(64,36,23,.12) }
+    .engine-product img { width:83%; height:83%; object-fit:contain }
+    .engine-product:nth-child(1) { left:0; transform:rotate(-7deg) }
+    .engine-product:nth-child(2) { left:84px; z-index:2; transform:translateY(-10px) }
+    .engine-product:nth-child(3) { left:168px; transform:rotate(7deg) }
+    .engine-includes { padding:34px 37px }
+    .engine-label { color:var(--quiet); font:500 9px/1 var(--mono); text-transform:uppercase }
+    .include-grid { display:grid; grid-template-columns:1fr 1fr; margin-top:20px; border-top:1px solid var(--line) }
+    .include { min-height:72px; padding:15px 14px 14px 0; display:grid; grid-template-columns:24px 1fr; gap:10px; align-items:start; border-bottom:1px solid var(--line) }
+    .include:nth-child(odd) { border-right:1px solid var(--line) }
+    .include:nth-child(even) { padding-left:16px }
+    .include-icon { width:20px; height:20px; display:grid; place-items:center; border-radius:50%; background:var(--green-soft); color:var(--green); font:600 10px/1 var(--mono) }
+    .include strong { display:block; font-size:11.5px; font-weight:600 }
+    .include span { display:block; margin-top:4px; color:var(--quiet); font-size:10.5px; line-height:1.4 }
+
+    /* Comparison */
+    .comparison { padding:100px 0 110px; border-block:1px solid var(--line); background:var(--paper-2) }
+    .comparison-head { display:grid; grid-template-columns:.86fr 1.14fr; gap:90px; align-items:end }
+    .comparison h2 { margin:0; font:300 italic clamp(45px,4.3vw,62px)/.96 var(--serif); letter-spacing:-.043em }
+    .comparison-head p { max-width:620px; margin:0; color:var(--copy); font-size:14.5px; font-weight:300; line-height:1.65 }
+    .comparison-tabs { display:none }
+    .compare-wrap { margin-top:41px; overflow:hidden; border:1px solid var(--line-strong); border-radius:14px; background:var(--paper) }
+    .compare-table { width:100%; border-collapse:collapse; table-layout:fixed }
+    .compare-table th,.compare-table td { padding:15px 18px; border-bottom:1px solid var(--line); font-size:11.5px; line-height:1.4 }
+    .compare-table tr:last-child th,.compare-table tr:last-child td { border-bottom:0 }
+    .compare-table thead th { height:93px; background:var(--paper); text-align:center; vertical-align:middle }
+    .compare-table thead th:first-child { width:34%; text-align:left }
+    .compare-table thead th:nth-child(3),.compare-table tbody td:nth-child(3) { background:rgba(170,88,52,.055) }
+    .compare-table thead b { display:block; font-size:13px; font-weight:600 }
+    .compare-table thead span { display:block; margin-top:6px; color:var(--quiet); font:400 9.5px/1 var(--mono) }
+    .compare-table tbody th { color:var(--copy); font-weight:400; text-align:left }
+    .compare-table tbody td { color:var(--copy); text-align:center; font-size:11px }
+    .compare-table .group th { padding:13px 18px; background:var(--cream-2); color:var(--ink); font:500 9px/1 var(--mono); letter-spacing:.02em; text-transform:uppercase }
+    .yes { width:20px; height:20px; margin:auto; display:grid; place-items:center; border-radius:50%; background:var(--green-soft); color:var(--green); font:600 10px/1 var(--mono) }
+    .no { color:#aaa096 }
+    .value { color:var(--ink); font-weight:500; font-variant-numeric:tabular-nums }
+
+    /* FAQ + close */
+    .faq { padding:104px 0 114px }
+    .faq-layout { display:grid; grid-template-columns:350px minmax(0,1fr); gap:105px; align-items:start }
+    .faq h2 { margin:0; font:300 italic 57px/.98 var(--serif); letter-spacing:-.04em }
+    .faq-side p { margin:20px 0 0; color:var(--copy); font-size:14px; line-height:1.65 }
+    .faq-side .button { margin-top:24px }
+    .questions { border-top:1px solid var(--line-strong) }
+    .question { border-bottom:1px solid var(--line-strong) }
+    .question button { width:100%; padding:21px 0; display:grid; grid-template-columns:1fr 24px; gap:20px; align-items:center; border:0; background:transparent; text-align:left; font-size:14px; font-weight:500 }
+    .question button i { position:relative; width:20px; height:20px; font-style:normal }
+    .question button i::before,.question button i::after { content:""; position:absolute; top:9px; left:4px; width:12px; height:1px; background:var(--ink); transition:transform .2s }
+    .question button i::after { transform:rotate(90deg) }
+    .question.open button i::after { transform:none }
+    .answer { display:grid; grid-template-rows:0fr; transition:grid-template-rows .25s ease }
+    .answer>div { overflow:hidden }
+    .answer p { max-width:720px; margin:0; padding:0 42px 21px 0; color:var(--copy); font-size:13px; line-height:1.67 }
+    .question.open .answer { grid-template-rows:1fr }
+    .final-cta { padding:0 0 104px }
+    .cta-panel { display:flex; align-items:center; gap:50px; padding:40px 43px; border:1px solid rgba(170,88,52,.24); border-radius:17px; background:var(--terra-soft) }
+    .cta-panel h2 { max-width:720px; margin:0; font:300 italic clamp(38px,3.8vw,52px)/.99 var(--serif); letter-spacing:-.038em }
+    .cta-panel p { max-width:500px; margin:12px 0 0; color:var(--terra-dark); font-size:13px; line-height:1.58 }
+    .cta-actions { margin-left:auto; display:flex; gap:10px; flex:0 0 auto }
+    .site-footer { padding:56px 0 27px; background:var(--ink); color:white }
+    .footer-grid { display:grid; grid-template-columns:2fr 1fr 1fr 1fr; gap:45px }
+    .footer-brand img { width:110px }
+    .footer-brand p { max-width:270px; margin:18px 0 0; color:rgba(255,255,255,.55); font-size:12px; line-height:1.55 }
+    .footer-title { color:rgba(255,255,255,.38); font:500 9px/1 var(--mono); text-transform:uppercase }
+    .footer-links { display:grid; gap:11px; margin-top:17px }
+    .footer-links a { color:rgba(255,255,255,.74); font-size:11.5px }
+    .footer-bottom { display:flex; justify-content:space-between; margin-top:54px; padding-top:18px; border-top:1px solid rgba(255,255,255,.12); color:rgba(255,255,255,.36); font-size:9.5px }
+    .footer-legal { display:flex; gap:17px }
+
+    @media(max-width:1120px) {
+      .plan-grid { grid-template-columns:1fr 1fr }
+      .plan { min-height:478px }
+      .plan:nth-child(2) { border-right:0 }
+      .plan:nth-child(-n+2) { border-bottom:1px solid var(--line) }
+      .guarantee { grid-template-columns:230px minmax(220px,.8fr) minmax(300px,1.2fr); gap:20px }.guarantee-measure { padding-left:18px }.guarantee-copy { padding-left:20px }
+    }
+    @media(max-width:850px) {
+      .hero { padding-top:48px }
+      .guarantee { grid-template-columns:1fr 1fr; gap:17px 24px }.guarantee-measure { padding-left:20px }.guarantee-copy { grid-column:1/-1; padding:16px 0 0; border-left:0; border-top:1px solid var(--line) }
+      .engine-layout { grid-template-columns:1fr }.engine-story { min-height:280px }.engine-products { right:28px }
+      .comparison-head,.faq-layout { grid-template-columns:1fr; gap:27px }.comparison-head p { max-width:700px }
+      .faq-layout { gap:39px }.faq-side { display:grid; grid-template-columns:1fr auto; gap:25px; align-items:end }.faq-side .button { margin:0 }
+      .cta-panel { flex-direction:column; align-items:flex-start }.cta-actions { margin-left:0 }
+    }
+    @media(max-width:640px) {
+      .shell { width:min(100% - 28px,1320px) }.nav { height:61px }.nav-inner { gap:13px }.logo img { width:95px }.nav-links { margin-left:auto }.nav-links a { padding:8px 6px; font-size:10.5px }.nav-cta { display:none }
+      .hero { padding:43px 0 35px }.hero h1 { font-size:49px }.hero p { margin-top:18px; font-size:14px }
+      .plans { padding-bottom:75px }.plan-grid { grid-template-columns:1fr }.plan,.plan:nth-child(2) { min-height:0; padding:26px 23px; border-right:0; border-bottom:1px solid var(--line) }.plan:last-child { border-bottom:0 }.plan-intro { min-height:0 }.price { margin-top:19px }.features { margin-bottom:23px }
+      .guarantee { margin-top:22px; padding:21px; grid-template-columns:1fr; gap:15px }.guarantee h2 { font-size:29px }.guarantee-measure { padding:14px 0 0; border-left:0; border-top:1px solid var(--line) }.guarantee-copy { grid-column:auto; padding-top:15px }.guarantee-copy p { font-size:11.5px }.guarantee-terms { flex-wrap:wrap; gap:7px }
+      .engine { margin-top:30px }.engine-story { min-height:313px; padding:29px 24px }.engine-story h2 { max-width:310px; font-size:40px }.engine-products { left:38px; right:auto; transform:scale(.9); transform-origin:left bottom }.engine-includes { padding:27px 22px }.include-grid { grid-template-columns:1fr }.include:nth-child(odd) { border-right:0 }.include:nth-child(even) { padding-left:0 }
+      .comparison { padding:73px 0 80px }.comparison h2 { font-size:43px }.comparison-tabs { display:grid; grid-template-columns:repeat(4,1fr); gap:3px; margin-top:27px; padding:3px; border:1px solid var(--line); border-radius:9px; background:var(--paper) }.comparison-tabs button { min-width:0; padding:10px 4px; border:0; border-radius:6px; background:transparent; color:var(--quiet); font-size:9.5px }.comparison-tabs button.active { background:var(--ink); color:white }.compare-wrap { margin-top:12px }.compare-table { table-layout:auto }.compare-table th,.compare-table td { padding:14px 12px }.compare-table thead th:first-child { width:66%; min-width:0 }.compare-table [data-plan] { display:none }.compare-table[data-active-plan="free"] [data-plan="free"],.compare-table[data-active-plan="specialist"] [data-plan="specialist"],.compare-table[data-active-plan="lead"] [data-plan="lead"],.compare-table[data-active-plan="enterprise"] [data-plan="enterprise"] { display:table-cell }.compare-table thead th { height:75px }.compare-table tbody th { font-size:11.5px }.compare-table .group th { font-size:8.5px }
+      .faq { padding:76px 0 84px }.faq h2 { font-size:46px }.faq-side { display:block }.faq-side .button { margin-top:19px }.question button { font-size:13px }.answer p { padding-right:12px }
+      .final-cta { padding-bottom:74px }.cta-panel { padding:29px 23px }.cta-actions { width:100%; flex-direction:column }.cta-actions .button { width:100% }
+      .footer-grid { grid-template-columns:1fr 1fr; gap:35px }.footer-brand { grid-column:1/-1 }.footer-bottom { align-items:flex-start; gap:20px }
+    }
+    @media(prefers-reduced-motion:reduce) { html { scroll-behavior:auto } *,*::before,*::after { transition:none!important; animation:none!important } }
+  </style>
+</head>
+<body>
+  <header class="nav">
+    <div class="shell nav-inner">
+      <a class="logo" href="./carve-product-understanding-homepage.html" aria-label="Carve home"><img src="./carve-ecom-assets/lockup-black.svg" alt="Carve"></a>
+      <nav class="nav-links" aria-label="Main navigation"><a href="./carve-how-it-works-option-b.html">How it works</a><a class="active" href="./carve-pricing.html">Pricing</a></nav>
+      <a class="nav-cta" href="https://calendar.app.google/TA9Xv89TnJkJidm78" target="_blank" rel="noopener noreferrer">Talk to a founder</a>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="shell">
+        <h1>A plan for the size of your store.</h1>
+        <p>Every plan includes the complete Carve engine. Choose by active products and the support your team needs.</p>
+      </div>
+    </section>
+
+    <section class="plans" id="plans">
+      <div class="shell">
+        <div class="plan-grid">
+          <article class="plan" data-plan-card="free">
+            <div class="plan-name-row"><h2 class="plan-name">Free</h2></div>
+            <p class="plan-intro">Better product data makes the internet better for shoppers. Every store should be able to provide it, not only the biggest brands.</p>
+            <div class="price"><strong>$0</strong><span>/ month</span></div>
+            <div class="capacity"><div><div class="capacity-label">Catalog capacity</div><strong>100 active products</strong></div><span>1 store</span></div>
+            <div class="plan-features-title">The complete Carve workflow</div>
+            <ul class="features"><li>All supported product fields</li><li>Review mode and Autopilot</li><li>GA4 and Search Console learning</li><li>Continuous re-optimization</li></ul>
+            <a class="button" href="https://calendar.app.google/TA9Xv89TnJkJidm78" target="_blank" rel="noopener noreferrer">Talk to a founder</a>
+          </article>
+
+          <article class="plan featured" data-plan-card="specialist">
+            <div class="plan-name-row"><h2 class="plan-name">Specialist</h2><span class="recommended">Most stores</span></div>
+            <p class="plan-intro">For growing brands that want Carve working continuously across the catalog.</p>
+            <div class="price"><strong>$499</strong><span>/ month</span></div>
+            <div class="capacity"><div><div class="capacity-label">Catalog capacity</div><strong>1,000 active products</strong></div><span>1 store</span></div>
+            <div class="plan-features-title">Everything in Free, at scale</div>
+            <ul class="features"><li>Full-catalog optimization</li><li>Continuous performance learning</li><li>Multi-language optimization</li><li>Standard support</li></ul>
+            <a class="button" href="https://calendar.app.google/TA9Xv89TnJkJidm78" target="_blank" rel="noopener noreferrer">Talk to a founder</a>
+          </article>
+
+          <article class="plan" data-plan-card="lead">
+            <div class="plan-name-row"><h2 class="plan-name">Lead</h2></div>
+            <p class="plan-intro">For established brands with larger catalogs, more markets and strategic support needs.</p>
+            <div class="price"><strong>$1,999</strong><span>/ month</span></div>
+            <div class="capacity"><div><div class="capacity-label">Catalog capacity</div><strong>5,000 active products</strong></div><span>Multi-market</span></div>
+            <div class="plan-features-title">Everything in Specialist, plus</div>
+            <ul class="features"><li>Competitor catalog gap analysis</li><li>Multi-market catalog scope</li><li>Monthly strategy review</li><li>Priority support</li></ul>
+            <a class="button" href="https://calendar.app.google/TA9Xv89TnJkJidm78" target="_blank" rel="noopener noreferrer">Talk to a founder</a>
+          </article>
+
+          <article class="plan" data-plan-card="enterprise">
+            <div class="plan-name-row"><h2 class="plan-name">Enterprise</h2></div>
+            <p class="plan-intro">For large catalogs, multiple stores and teams that need a tailored setup.</p>
+            <div class="price custom"><strong>Custom</strong></div>
+            <div class="capacity"><div><div class="capacity-label">Catalog capacity</div><strong>Unlimited products</strong></div><span>Multi-store</span></div>
+            <div class="plan-features-title">Everything in Lead, plus</div>
+            <ul class="features"><li>Custom product and market scope</li><li>Unlimited stores and regions</li><li>Dedicated success lead</li><li>Founder reviews and shared Slack</li></ul>
+            <a class="button" href="https://calendar.app.google/TA9Xv89TnJkJidm78" target="_blank" rel="noopener noreferrer">Talk to a founder</a>
+          </article>
+        </div>
+        <p class="billing-note">USD per month. Plans are selected, billed and managed through Shopify.</p>
+
+        <aside class="guarantee" aria-label="Carve 90-day traffic guarantee">
+          <h2>90 days to prove the work.</h2>
+          <div class="guarantee-measure"><div class="guarantee-icons" aria-hidden="true"><span><img src="./carve-ecom-assets/google.svg" alt=""></span><span><img src="./carve-ecom-assets/ga4.svg" alt=""></span></div><div><small>Measured in your data</small><strong>Organic product traffic</strong></div></div>
+          <div class="guarantee-copy"><strong>No growth in 90 days? Full refund.</strong><p>Every approved catalog improvement stays live in Shopify.</p><div class="guarantee-terms"><span>No clawback</span><span>No hidden setup fees</span></div></div>
+        </aside>
+
+        <section class="engine" aria-labelledby="engine-title">
+          <div class="engine-layout">
+            <div class="engine-story">
+              <h2 id="engine-title">Same intelligence.<br>Every plan.</h2>
+              <p>Free is not a watered-down Carve. Product understanding, optimization, publishing and learning are part of the product from day one.</p>
+              <div class="engine-products" aria-hidden="true"><span class="engine-product"><img src="./carve-ecom-assets/aesop-blue-chamomile-cutout.png" alt=""></span><span class="engine-product"><img src="./carve-ecom-assets/patagonia-better-sweater-vest-cutout.png" alt=""></span><span class="engine-product"><img src="./carve-ecom-assets/muuto-outline-sofa-cognac-cutout.png" alt=""></span></div>
+            </div>
+            <div class="engine-includes">
+              <div class="engine-label">Included from Free to Enterprise</div>
+              <div class="include-grid">
+                <div class="include"><i class="include-icon">✓</i><div><strong>Product understanding</strong><span>Your store, products, buyers and brand.</span></div></div>
+                <div class="include"><i class="include-icon">✓</i><div><strong>Every supported field</strong><span>Titles, descriptions, SEO, Q&amp;A and more.</span></div></div>
+                <div class="include"><i class="include-icon">✓</i><div><strong>Review or Autopilot</strong><span>Approve every field or let Carve ship.</span></div></div>
+                <div class="include"><i class="include-icon">✓</i><div><strong>Performance learning</strong><span>Connected Search Console and GA4 data.</span></div></div>
+                <div class="include"><i class="include-icon">✓</i><div><strong>Continuous re-optimization</strong><span>The catalog keeps improving after launch.</span></div></div>
+                <div class="include"><i class="include-icon">✓</i><div><strong>Multi-language optimization</strong><span>Product data shaped for every market.</span></div></div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </section>
+
+    <section class="comparison">
+      <div class="shell">
+        <div class="comparison-head"><h2>Compare every plan.</h2><p>The product-data engine stays the same. Plans change with catalog scale, operational complexity and the support your team needs.</p></div>
+        <div class="comparison-tabs" aria-label="Plan shown in comparison"><button class="active" type="button" data-compare-plan="free">Free</button><button type="button" data-compare-plan="specialist">Specialist</button><button type="button" data-compare-plan="lead">Lead</button><button type="button" data-compare-plan="enterprise">Enterprise</button></div>
+        <div class="compare-wrap">
+          <table class="compare-table" id="compare-table" data-active-plan="free">
+            <thead><tr><th scope="col">Feature</th><th scope="col" data-plan="free"><b>Free</b><span>$0 · 100 products</span></th><th scope="col" data-plan="specialist"><b>Specialist</b><span>$499 · 1,000 products</span></th><th scope="col" data-plan="lead"><b>Lead</b><span>$1,999 · 5,000 products</span></th><th scope="col" data-plan="enterprise"><b>Enterprise</b><span>Custom · Unlimited</span></th></tr></thead>
+            <tbody>
+              <tr class="group"><th colspan="5">Catalog and setup</th></tr>
+              <tr><th scope="row">Active products</th><td data-plan="free"><span class="value">100</span></td><td data-plan="specialist"><span class="value">1,000</span></td><td data-plan="lead"><span class="value">5,000</span></td><td data-plan="enterprise"><span class="value">Unlimited</span></td></tr>
+              <tr><th scope="row">Shopify stores</th><td data-plan="free">1</td><td data-plan="specialist">1</td><td data-plan="lead">1</td><td data-plan="enterprise">Custom</td></tr>
+              <tr><th scope="row">Markets and regions</th><td data-plan="free">1</td><td data-plan="specialist">1</td><td data-plan="lead">Multiple</td><td data-plan="enterprise">Custom</td></tr>
+              <tr><th scope="row">Carve-guided onboarding</th><td data-plan="free"><span class="yes" aria-label="Included">✓</span></td><td data-plan="specialist"><span class="yes" aria-label="Included">✓</span></td><td data-plan="lead"><span class="yes" aria-label="Included">✓</span></td><td data-plan="enterprise">Tailored</td></tr>
+              <tr class="group"><th colspan="5">Product understanding and fields</th></tr>
+              <tr><th scope="row">Store, product and buyer understanding</th><td data-plan="free"><span class="yes" aria-label="Included">✓</span></td><td data-plan="specialist"><span class="yes" aria-label="Included">✓</span></td><td data-plan="lead"><span class="yes" aria-label="Included">✓</span></td><td data-plan="enterprise"><span class="yes" aria-label="Included">✓</span></td></tr>
+              <tr><th scope="row">Title and description optimization</th><td data-plan="free"><span class="yes" aria-label="Included">✓</span></td><td data-plan="specialist"><span class="yes" aria-label="Included">✓</span></td><td data-plan="lead"><span class="yes" aria-label="Included">✓</span></td><td data-plan="enterprise"><span class="yes" aria-label="Included">✓</span></td></tr>
+              <tr><th scope="row">Product Q&amp;A</th><td data-plan="free"><span class="yes" aria-label="Included">✓</span></td><td data-plan="specialist"><span class="yes" aria-label="Included">✓</span></td><td data-plan="lead"><span class="yes" aria-label="Included">✓</span></td><td data-plan="enterprise"><span class="yes" aria-label="Included">✓</span></td></tr>
+              <tr><th scope="row">SEO title and meta description</th><td data-plan="free"><span class="yes" aria-label="Included">✓</span></td><td data-plan="specialist"><span class="yes" aria-label="Included">✓</span></td><td data-plan="lead"><span class="yes" aria-label="Included">✓</span></td><td data-plan="enterprise"><span class="yes" aria-label="Included">✓</span></td></tr>
+              <tr class="group"><th colspan="5">Control and publishing</th></tr>
+              <tr><th scope="row">Before-and-after review</th><td data-plan="free"><span class="yes" aria-label="Included">✓</span></td><td data-plan="specialist"><span class="yes" aria-label="Included">✓</span></td><td data-plan="lead"><span class="yes" aria-label="Included">✓</span></td><td data-plan="enterprise"><span class="yes" aria-label="Included">✓</span></td></tr>
+              <tr><th scope="row">Edit before publishing</th><td data-plan="free"><span class="yes" aria-label="Included">✓</span></td><td data-plan="specialist"><span class="yes" aria-label="Included">✓</span></td><td data-plan="lead"><span class="yes" aria-label="Included">✓</span></td><td data-plan="enterprise"><span class="yes" aria-label="Included">✓</span></td></tr>
+              <tr><th scope="row">Autopilot</th><td data-plan="free"><span class="yes" aria-label="Included">✓</span></td><td data-plan="specialist"><span class="yes" aria-label="Included">✓</span></td><td data-plan="lead"><span class="yes" aria-label="Included">✓</span></td><td data-plan="enterprise"><span class="yes" aria-label="Included">✓</span></td></tr>
+              <tr><th scope="row">Continuous re-optimization</th><td data-plan="free"><span class="yes" aria-label="Included">✓</span></td><td data-plan="specialist"><span class="yes" aria-label="Included">✓</span></td><td data-plan="lead"><span class="yes" aria-label="Included">✓</span></td><td data-plan="enterprise"><span class="yes" aria-label="Included">✓</span></td></tr>
+              <tr><th scope="row">Native Shopify sync</th><td data-plan="free"><span class="yes" aria-label="Included">✓</span></td><td data-plan="specialist"><span class="yes" aria-label="Included">✓</span></td><td data-plan="lead"><span class="yes" aria-label="Included">✓</span></td><td data-plan="enterprise"><span class="yes" aria-label="Included">✓</span></td></tr>
+              <tr class="group"><th colspan="5">Learning and support</th></tr>
+              <tr><th scope="row">Search Console and GA4</th><td data-plan="free"><span class="yes" aria-label="Included">✓</span></td><td data-plan="specialist"><span class="yes" aria-label="Included">✓</span></td><td data-plan="lead"><span class="yes" aria-label="Included">✓</span></td><td data-plan="enterprise"><span class="yes" aria-label="Included">✓</span></td></tr>
+              <tr><th scope="row">Performance-based learning</th><td data-plan="free"><span class="yes" aria-label="Included">✓</span></td><td data-plan="specialist"><span class="yes" aria-label="Included">✓</span></td><td data-plan="lead"><span class="yes" aria-label="Included">✓</span></td><td data-plan="enterprise"><span class="yes" aria-label="Included">✓</span></td></tr>
+              <tr><th scope="row">Multi-language optimization</th><td data-plan="free"><span class="yes" aria-label="Included">✓</span></td><td data-plan="specialist"><span class="yes" aria-label="Included">✓</span></td><td data-plan="lead"><span class="yes" aria-label="Included">✓</span></td><td data-plan="enterprise"><span class="yes" aria-label="Included">✓</span></td></tr>
+              <tr><th scope="row">Competitor catalog gap analysis</th><td data-plan="free"><span class="no" aria-label="Not included">—</span></td><td data-plan="specialist"><span class="no" aria-label="Not included">—</span></td><td data-plan="lead"><span class="yes" aria-label="Included">✓</span></td><td data-plan="enterprise"><span class="yes" aria-label="Included">✓</span></td></tr>
+              <tr><th scope="row">Support</th><td data-plan="free">Standard</td><td data-plan="specialist">Standard</td><td data-plan="lead">Priority</td><td data-plan="enterprise">Dedicated</td></tr>
+              <tr><th scope="row">Monthly strategy review</th><td data-plan="free"><span class="no" aria-label="Not included">—</span></td><td data-plan="specialist"><span class="no" aria-label="Not included">—</span></td><td data-plan="lead"><span class="yes" aria-label="Included">✓</span></td><td data-plan="enterprise"><span class="yes" aria-label="Included">✓</span></td></tr>
+              <tr><th scope="row">Custom scope and integrations</th><td data-plan="free"><span class="no" aria-label="Not included">—</span></td><td data-plan="specialist"><span class="no" aria-label="Not included">—</span></td><td data-plan="lead"><span class="no" aria-label="Not included">—</span></td><td data-plan="enterprise"><span class="yes" aria-label="Included">✓</span></td></tr>
+              <tr><th scope="row">Shared Slack</th><td data-plan="free"><span class="no" aria-label="Not included">—</span></td><td data-plan="specialist"><span class="no" aria-label="Not included">—</span></td><td data-plan="lead"><span class="no" aria-label="Not included">—</span></td><td data-plan="enterprise"><span class="yes" aria-label="Included">✓</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section class="faq">
+      <div class="shell faq-layout">
+        <div class="faq-side"><div><h2>Pricing questions.</h2><p>Clear answers before you choose a plan.</p></div><a class="button" href="mailto:william@carve.ac">Ask William</a></div>
+        <div class="questions">
+          <article class="question open"><button type="button" aria-expanded="true"><span>What counts as a product?</span><i aria-hidden="true"></i></button><div class="answer"><div><p>One distinct active Shopify product counts as one product. Size, color and other variants stay grouped beneath it and do not each use another product slot.</p></div></div></article>
+          <article class="question"><button type="button" aria-expanded="false"><span>Is Free a reduced version of Carve?</span><i aria-hidden="true"></i></button><div class="answer"><div><p>No. Free includes the complete Carve workflow for up to 100 products, including Autopilot, continuous re-optimization, Search Console and GA4 learning, and multi-language optimization. Paid plans add catalog capacity and higher-touch support.</p></div></div></article>
+          <article class="question"><button type="button" aria-expanded="false"><span>What happens when my catalog grows?</span><i aria-hidden="true"></i></button><div class="answer"><div><p>Move to the next plan when your active product count passes the current limit. Plans can be changed through Shopify.</p></div></div></article>
+          <article class="question"><button type="button" aria-expanded="false"><span>Does Carve publish without approval?</span><i aria-hidden="true"></i></button><div class="answer"><div><p>Only if you choose Autopilot. Review mode shows the current and proposed value for every supported field before anything syncs.</p></div></div></article>
+          <article class="question"><button type="button" aria-expanded="false"><span>What is included in Enterprise?</span><i aria-hidden="true"></i></button><div class="answer"><div><p>Enterprise is shaped around the catalog, stores, markets and team involved. It includes a tailored scope, dedicated support and a commercial structure agreed with your team.</p></div></div></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="final-cta"><div class="shell cta-panel"><div><h2>Bring us the catalog.</h2><p>We will show you where Carve would start and which plan fits the work.</p></div><div class="cta-actions"><a class="button primary" href="https://calendar.app.google/TA9Xv89TnJkJidm78" target="_blank" rel="noopener noreferrer">Talk to a founder</a><a class="button" href="https://carve.ac/demo">See Carve on your catalog</a></div></div></section>
+  </main>
+
+  <footer class="site-footer"><div class="shell"><div class="footer-grid"><div class="footer-brand"><a href="./carve-product-understanding-homepage.html"><img src="./carve-ecom-assets/lockup-white.svg" alt="Carve"></a><p>Product data that helps Shopify brands get found, understood and chosen.</p></div><div><div class="footer-title">Product</div><div class="footer-links"><a href="./carve-how-it-works-option-b.html">How it works</a><a href="./carve-pricing.html">Pricing</a></div></div><div><div class="footer-title">Start</div><div class="footer-links"><a href="https://calendar.app.google/TA9Xv89TnJkJidm78">Talk to a founder</a><a href="https://carve.ac/demo">See Carve on your catalog</a><a href="https://carve.ac/login">Log in</a></div></div><div><div class="footer-title">Company</div><div class="footer-links"><a href="https://carve.ac/insights">Insights</a><a href="mailto:william@carve.ac">william@carve.ac</a></div></div></div><div class="footer-bottom"><span>© 2026 Carve · Carve Labs AB</span><div class="footer-legal"><a href="https://carve.ac/privacy">Privacy</a><a href="https://carve.ac/terms">Terms</a></div></div></div></footer>
+
+  <script>
+    document.querySelectorAll('.question button').forEach(button=>button.addEventListener('click',()=>{const question=button.closest('.question'),open=question.classList.toggle('open');button.setAttribute('aria-expanded',String(open))}));
+    const compareTable=document.getElementById('compare-table');
+    document.querySelectorAll('[data-compare-plan]').forEach(button=>button.addEventListener('click',()=>{document.querySelectorAll('[data-compare-plan]').forEach(item=>item.classList.toggle('active',item===button));compareTable.dataset.activePlan=button.dataset.comparePlan}));
+  </script>
+</body>
+</html>

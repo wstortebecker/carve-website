@@ -1,0 +1,1776 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Carve — Product understanding, written into your store</title>
+  <meta name="description" content="Carve turns product understanding into product data that helps search engines rank, AI agents reason, and shoppers choose." />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@1,300;1,400&family=DM+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg:#F5F0E8;
+      --bg-2:#EDE7DC;
+      --bg-3:#E0D9CE;
+      --bg-4:#D8D0C4;
+      --ink:#1A1410;
+      --ink-2:#5C4F45;
+      --ink-3:#685A50;
+      --accent:#8B4A2C;
+      --accent-h:#7A3D22;
+      --accent-bg:rgba(139,74,44,.10);
+      --positive:#2D6A4F;
+      --positive-bg:rgba(45,106,79,.10);
+      --border:rgba(26,20,16,.09);
+      --border-2:rgba(26,20,16,.16);
+      --serif:'Cormorant Garamond', Georgia, serif;
+      --sans:'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      --mono:'JetBrains Mono', monospace;
+    }
+
+    * { box-sizing:border-box; }
+    html { scroll-behavior:smooth; }
+    body {
+      margin:0;
+      background:var(--bg);
+      color:var(--ink);
+      font-family:var(--sans);
+      -webkit-font-smoothing:antialiased;
+    }
+    body::before {
+      content:"";
+      position:fixed;
+      inset:0;
+      z-index:1000;
+      pointer-events:none;
+      opacity:.035;
+      background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      background-size:180px 180px;
+    }
+    img { display:block; max-width:100%; }
+    a { color:inherit; text-decoration:none; }
+    button { color:inherit; font:inherit; }
+    .shell { width:min(100% - 48px, 1180px); margin-inline:auto; }
+    .serif { font-family:var(--serif); font-style:italic; font-weight:300; }
+    .mono { font-family:var(--mono); }
+    .orb-mini { width:13px; height:13px; filter:drop-shadow(0 3px 5px rgba(93,37,17,.24)); }
+    .button {
+      display:inline-flex;
+      justify-content:center;
+      align-items:center;
+      gap:10px;
+      min-height:48px;
+      padding:0 23px;
+      border:1px solid transparent;
+      border-radius:999px;
+      font-size:14px;
+      font-weight:500;
+      transition:.2s ease;
+    }
+    .button.primary { background:var(--accent); color:var(--bg); }
+    .button.primary:hover { background:var(--accent-h); transform:translateY(-1px); }
+    .button.ghost { border-color:var(--border-2); }
+    .button.ghost:hover { background:rgba(26,20,16,.04); }
+    .arrow { transition:transform .2s ease; }
+    .button:hover .arrow { transform:translateX(3px); }
+
+    nav {
+      position:sticky;
+      top:0;
+      z-index:100;
+      height:64px;
+      border-bottom:1px solid var(--border);
+      background:rgba(245,240,232,.91);
+      backdrop-filter:blur(12px);
+      -webkit-backdrop-filter:blur(12px);
+    }
+    .nav-inner { height:100%; display:flex; align-items:center; gap:20px; }
+    .brand-lockup { width:112px; height:auto; }
+    .nav-links { display:flex; align-items:center; gap:4px; margin-left:18px; }
+    .nav-links a { padding:8px 11px; border-radius:7px; color:var(--ink-2); font-size:13px; }
+    .nav-links a:hover { color:var(--ink); background:rgba(26,20,16,.04); }
+    .nav-actions { display:grid; grid-template-columns:158px; gap:8px; margin-left:auto; }
+    .nav-actions .button { width:100%; min-height:38px; padding-inline:13px; font-size:12px; }
+
+    /* HERO */
+    .hero { overflow:hidden; padding:74px 0 90px; }
+    .hero-grid { display:grid; grid-template-columns:.96fr 1.04fr; gap:62px; align-items:center; }
+    .hero h1 {
+      max-width:650px;
+      margin:0 0 25px;
+      font-size:clamp(54px,6.3vw,90px);
+      letter-spacing:-.035em;
+      line-height:.96;
+    }
+    .hero h1 span { color:var(--accent); }
+    .hero-copy { max-width:560px; color:var(--ink-2); font-size:17px; line-height:1.68; font-weight:300; }
+    .hero-copy strong { color:var(--ink); font-weight:500; }
+    .hero-actions { display:grid; grid-template-columns:repeat(2,190px); gap:10px; margin-top:32px; }
+    .hero-actions .button { width:100%; padding-inline:16px; font-size:13px; }
+    .product-stage { position:relative; display:grid; grid-template-columns:.88fr 1.12fr; min-height:590px; overflow:hidden; border:1px solid var(--border-2); border-radius:20px; background:var(--bg-2); box-shadow:0 28px 78px rgba(26,20,16,.14); }
+    .kicker { color:var(--ink-3); font:500 10px/1.4 var(--mono); letter-spacing:.1em; text-transform:uppercase; }
+    .product-canvas { position:relative; min-width:0; overflow:hidden; background:linear-gradient(145deg,#F8F5EF 0%,#E9E1D5 100%); }
+    .product-canvas::after { content:""; position:absolute; left:15%; right:-35%; bottom:-33%; height:48%; border-radius:50%; background:rgba(139,74,44,.08); filter:blur(2px); }
+    .catalog-head { position:relative; z-index:4; display:flex; align-items:center; justify-content:space-between; gap:12px; padding:16px 17px; border-bottom:1px solid var(--border); background:rgba(245,240,232,.7); backdrop-filter:blur(8px); }
+    .catalog-brand { display:flex; align-items:center; gap:9px; font-size:12px; font-weight:500; }
+    .catalog-brand img { width:20px; height:20px; filter:drop-shadow(0 4px 7px rgba(93,37,17,.22)); }
+    .catalog-view { color:var(--ink-3); font:400 10px/1 var(--mono); letter-spacing:.05em; text-transform:uppercase; }
+    .featured-visual { position:absolute; z-index:1; inset:54px 0 130px; display:grid; place-items:center; }
+    .featured-visual img { width:86%; height:90%; object-fit:contain; transition:opacity .22s ease,transform .55s cubic-bezier(.16,1,.3,1); filter:drop-shadow(0 24px 30px rgba(26,20,16,.15)); }
+    .featured-visual.swapping img { opacity:0; transform:translateY(8px) scale(.97); }
+    .product-rail { position:absolute; z-index:5; left:13px; top:72px; display:grid; gap:7px; }
+    .commerce-product { position:relative; width:52px; height:52px; padding:0; overflow:hidden; border:1px solid rgba(26,20,16,.11); border-radius:9px; background:rgba(245,240,232,.84); cursor:pointer; transition:border-color .2s ease,transform .2s ease,box-shadow .2s ease; }
+    .commerce-product:hover { transform:translateX(2px); }
+    .commerce-product.active { border-color:var(--accent); box-shadow:0 6px 18px rgba(26,20,16,.13); }
+    .commerce-image { width:100%; height:100%; }
+    .commerce-image img { width:100%; height:100%; object-fit:contain; padding:7px; }
+    .commerce-select { position:absolute; right:3px; top:3px; width:12px; height:12px; display:grid; place-items:center; border-radius:50%; background:var(--accent); color:var(--bg); font-size:7px; opacity:0; }
+    .commerce-product.active .commerce-select { opacity:1; }
+    .featured-meta { position:absolute; z-index:4; left:0; right:0; bottom:0; min-height:130px; padding:20px 20px 18px; border-top:1px solid var(--border); background:rgba(245,240,232,.82); backdrop-filter:blur(10px); }
+    .featured-brand { color:var(--ink-3); font:500 10px/1.3 var(--mono); letter-spacing:.07em; text-transform:uppercase; }
+    .featured-meta h3 { margin:7px 0 8px; font-size:18px; font-weight:500; line-height:1.17; }
+    .featured-meta-row { display:flex; align-items:center; justify-content:space-between; gap:10px; color:var(--ink-2); font-size:10.5px; }
+    .featured-proof { color:var(--positive); font:500 10px/1 var(--mono); white-space:nowrap; }
+    .reason-stream { position:relative; display:flex; min-width:0; flex-direction:column; overflow:hidden; background:var(--ink); color:var(--bg); }
+    .reason-stream::before { content:""; position:absolute; inset:0; background:linear-gradient(105deg,transparent 30%,rgba(245,240,232,.06) 48%,transparent 66%); transform:translateX(-100%); animation:catalog-scan 4.8s ease-in-out infinite; }
+    .stream-head { position:relative; display:flex; align-items:center; gap:11px; padding:18px 19px 16px; border-bottom:1px solid rgba(245,240,232,.1); }
+    .stream-head img { width:30px; height:30px; }
+    .stream-head div { min-width:0; }
+    .stream-head small { display:block; color:rgba(245,240,232,.78); font:400 10px/1.2 var(--mono); letter-spacing:.06em; text-transform:uppercase; }
+    .stream-head strong { display:block; overflow:hidden; margin-top:4px; font-size:13px; font-weight:500; white-space:nowrap; text-overflow:ellipsis; }
+    .stream-status { margin-left:auto; color:#A7D9BC; font:500 10px/1 var(--mono); text-transform:uppercase; white-space:nowrap; }
+    .reason-pipeline { position:relative; display:grid; grid-template-columns:1fr 1fr; gap:5px; padding:14px 17px; border-bottom:1px solid rgba(245,240,232,.08); }
+    .reason-step { position:relative; overflow:hidden; padding:10px; border:1px solid rgba(245,240,232,.14); border-radius:6px; background:rgba(245,240,232,.035); color:rgba(245,240,232,.78); font:400 10px/1.3 var(--mono); text-align:left; cursor:pointer; transition:.2s ease; }
+    .reason-step:hover { color:rgba(245,240,232,.92); background:rgba(245,240,232,.07); }
+    .reason-step.active { border-color:rgba(214,184,154,.42); background:rgba(214,184,154,.1); color:#E7CFB8; }
+    .reason-step.active::after { content:""; position:absolute; left:0; bottom:0; width:100%; height:1px; background:#D6B89A; transform-origin:left; animation:reason-progress 3.8s linear both; }
+    .stream-read { position:relative; display:flex; flex:1; flex-direction:column; justify-content:center; padding:25px 23px 23px; }
+    .stream-read strong { display:block; color:var(--bg); font:300 italic 29px/1.04 var(--serif); letter-spacing:-.02em; }
+    .stream-read p { margin:13px 0 18px; color:rgba(245,240,232,.78); font-size:13px; line-height:1.62; }
+    .stream-facts { display:flex; flex-wrap:wrap; gap:6px; }
+    .stream-facts span { padding:6px 8px; border:1px solid rgba(245,240,232,.2); border-radius:999px; color:#E0C2A5; font:400 10px/1 var(--mono); }
+    @keyframes catalog-scan { 0%,28%{transform:translateX(-100%)} 70%,100%{transform:translateX(100%)} }
+    @keyframes reason-progress { from{transform:scaleX(0)} to{transform:scaleX(1)} }
+
+    .channel-bar { position:relative; overflow:hidden; padding:82px 0 90px; background:var(--ink); color:var(--bg); }
+    .channel-bar::after { content:""; position:absolute; width:420px; height:420px; left:-240px; bottom:-300px; border-radius:50%; background:radial-gradient(circle,rgba(139,74,44,.28),transparent 68%); }
+    .channel-inner { position:relative; z-index:1; display:grid; grid-template-columns:270px 1fr; gap:48px; align-items:center; }
+    .channel-intro h2 { margin:0; font:300 italic 43px/1.03 var(--serif); letter-spacing:-.025em; }
+    .channel-intro > p { margin:18px 0 0; color:rgba(245,240,232,.74); font-size:14px; line-height:1.65; }
+    .channel-product { display:grid; grid-template-columns:64px 1fr; gap:12px; align-items:center; margin-top:25px; padding:10px; border:1px solid rgba(245,240,232,.12); border-radius:10px; background:rgba(245,240,232,.05); }
+    .channel-product img { width:64px; height:72px; padding:4px; object-fit:contain; border-radius:6px; background:var(--bg); }
+    .channel-product small { display:block; color:rgba(245,240,232,.78); font:400 10px/1 var(--mono); text-transform:uppercase; }
+    .channel-product strong { display:block; margin-top:6px; font-size:12px; font-weight:500; line-height:1.35; }
+    .channel-product span { display:block; margin-top:7px; color:#A7D9BC; font:500 10px/1 var(--mono); text-transform:uppercase; }
+    .channel-journey { position:relative; display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:13px; align-items:stretch; min-width:0; }
+    .channel-journey::before { content:""; position:absolute; left:-28px; right:18px; top:50%; height:1px; background:linear-gradient(90deg,rgba(214,184,154,.7),rgba(214,184,154,.08)); }
+    .channel-journey::after { content:"→"; position:absolute; right:4px; top:calc(50% - 9px); color:#D6B89A; font-size:14px; }
+    .channel { --settle-y:0px; position:relative; z-index:1; display:flex; min-width:0; min-height:316px; height:100%; flex-direction:column; overflow:hidden; border:1px solid rgba(26,20,16,.15); border-radius:12px; background:var(--bg); color:var(--ink); box-shadow:0 22px 45px rgba(0,0,0,.24); transition:transform .25s ease,opacity .55s ease; }
+    .channel:hover { transform:translateY(-5px); }
+    .channel-top { display:flex; align-items:center; justify-content:space-between; gap:10px; }
+    .channel-head { padding:14px 15px 12px; border-bottom:1px solid var(--border); }
+    .channel-label { color:var(--ink-3); font:500 10px/1 var(--mono); letter-spacing:.07em; text-transform:uppercase; }
+    .channel-state { display:inline-flex; align-items:center; gap:5px; color:var(--positive); font:500 10px/1 var(--mono); text-transform:uppercase; }
+    .channel-state::before { content:""; width:5px; height:5px; border-radius:50%; background:var(--positive); }
+    .channel h3 { margin:9px 0 0; font-size:15px; font-weight:500; }
+    .serp-preview,.agent-preview,.pdp-preview { flex:1; margin:10px; overflow:hidden; border:1px solid var(--border); border-radius:8px; background:#FAF8F3; }
+    .serp-preview { padding:16px 13px; }
+    .serp-url { color:var(--positive); font:400 10px/1.3 var(--mono); }
+    .serp-title { margin-top:9px; color:#284E9B; font-size:13px; line-height:1.4; }
+    .serp-copy { margin-top:7px; color:var(--ink-2); font-size:11px; line-height:1.5; }
+    .query-match { display:flex; flex-wrap:wrap; gap:4px; margin-top:14px; }
+    .query-match span { padding:5px 6px; border-radius:4px; background:var(--accent-bg); color:var(--accent); font:400 10px/1 var(--mono); }
+    .preview-foot { display:flex; justify-content:space-between; gap:10px; margin-top:14px; padding-top:10px; border-top:1px solid var(--border); color:var(--ink-3); font:400 10px/1 var(--mono); }
+    .preview-foot strong { color:var(--positive); font-weight:500; }
+    .agent-preview { padding:10px; }
+    .agent-question { padding:11px; border-radius:6px; background:var(--bg-2); color:var(--ink); font-size:11px; line-height:1.5; }
+    .agent-answer { display:flex; gap:8px; margin-top:10px; color:var(--ink-2); font-size:11px; line-height:1.5; }
+    .agent-answer img { width:14px; height:14px; flex:none; }
+    .answerable { display:flex; flex-wrap:wrap; gap:4px; margin-top:8px; }
+    .answerable span { padding:5px 6px; border:1px solid rgba(45,106,79,.24); border-radius:4px; color:var(--positive); font:400 10px/1 var(--mono); text-transform:uppercase; }
+    .pdp-preview { display:flex; flex-direction:column; padding:9px; }
+    .pdp-product { display:grid; grid-template-columns:58px 1fr; gap:9px; align-items:center; }
+    .pdp-product img { width:58px; height:70px; object-fit:contain; padding:4px; background:var(--bg); }
+    .pdp-product small { color:var(--ink-3); font:400 10px/1 var(--mono); text-transform:uppercase; }
+    .pdp-product strong { display:block; margin-top:5px; font-size:12px; font-weight:500; line-height:1.3; }
+    .pdp-rating { margin-top:5px; color:var(--accent); font-size:10px; }
+    .pdp-row { display:flex; align-items:center; gap:7px; padding:9px 0; border-top:1px solid var(--border); color:var(--ink-2); font-size:11px; }
+    .pdp-row span { margin-left:auto; color:var(--positive); font:500 10px/1 var(--mono); }
+    .pdp-add { display:grid; place-items:center; min-height:34px; margin-top:auto; border-radius:5px; background:var(--ink); color:var(--bg); font-size:11px; }
+
+    /* UNDERSTANDING */
+    .understanding { padding:124px 0; }
+    .section-title { margin:0; max-width:800px; font-size:clamp(44px,5.2vw,72px); line-height:1.02; letter-spacing:-.03em; }
+    .section-lede { margin:25px 0 0; max-width:600px; color:var(--ink-2); font-size:17px; line-height:1.68; font-weight:300; }
+    .understanding-stage {
+      display:grid;
+      grid-template-columns:.82fr 1.18fr;
+      gap:0;
+      height:660px;
+      margin-top:66px;
+      overflow:hidden;
+      border:1px solid var(--border-2);
+      border-radius:20px;
+      background:var(--bg-2);
+      box-shadow:0 18px 65px rgba(26,20,16,.08);
+    }
+    .understanding-photo { position:relative; min-height:0; overflow:hidden; }
+    .understanding-photo img { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; object-position:center; }
+    .understanding-photo::after { content:""; position:absolute; inset:0; background:linear-gradient(180deg,transparent 58%,rgba(26,20,16,.58)); }
+    .photo-caption { position:absolute; z-index:2; left:25px; bottom:24px; color:var(--bg); }
+    .photo-caption .kicker { color:rgba(245,240,232,.76); }
+    .photo-caption strong { display:block; margin-top:8px; font:300 italic 27px/1.1 var(--serif); }
+    .understanding-panel { display:flex; flex-direction:column; min-width:0; padding:34px 38px 30px; }
+    .panel-head { display:flex; align-items:center; justify-content:space-between; gap:20px; padding-bottom:26px; border-bottom:1px solid var(--border); }
+    .panel-brand { display:flex; align-items:center; gap:10px; }
+    .panel-brand img { width:28px; height:28px; filter:drop-shadow(0 5px 8px rgba(93,37,17,.18)); }
+    .panel-brand span { font-size:14px; font-weight:500; }
+    .panel-state { display:inline-flex; align-items:center; gap:7px; color:var(--positive); font:500 10px/1 var(--mono); letter-spacing:.08em; text-transform:uppercase; }
+    .panel-state::before { content:""; width:6px; height:6px; border-radius:50%; background:var(--positive); box-shadow:0 0 0 4px var(--positive-bg); }
+    .understanding-tabs { display:flex; gap:6px; margin:24px 0 34px; overflow:auto; }
+    .u-tab { border:1px solid var(--border); background:var(--bg); border-radius:999px; padding:9px 12px; color:var(--ink-2); font-size:11px; cursor:pointer; white-space:nowrap; }
+    .u-tab.active { border-color:var(--accent); background:var(--accent); color:var(--bg); }
+    .u-content { display:none; animation:fade-up .35s ease both; }
+    .u-content.active { display:block; }
+    @keyframes fade-up { from{opacity:0;transform:translateY(5px)} to{opacity:1;transform:none} }
+    .answer-label { color:var(--ink-3); font:500 10px/1.4 var(--mono); letter-spacing:.11em; text-transform:uppercase; }
+    .answer-copy { max-width:620px; margin:12px 0 26px; font:300 italic clamp(27px,3vw,39px)/1.16 var(--serif); letter-spacing:-.02em; }
+    .reason-list { display:grid; gap:0; border-top:1px solid var(--border); }
+    .reason-row { display:grid; grid-template-columns:110px 1fr; gap:18px; padding:16px 0; border-bottom:1px solid var(--border); }
+    .reason-row small { color:var(--ink-3); font:500 10px/1.5 var(--mono); letter-spacing:.08em; text-transform:uppercase; }
+    .reason-row p { margin:0; color:var(--ink-2); font-size:13px; line-height:1.55; }
+    .evidence-foot { display:flex; gap:20px; flex-wrap:wrap; margin-top:auto; padding-top:26px; color:var(--ink-3); font:400 10px/1.4 var(--mono); letter-spacing:.05em; text-transform:uppercase; }
+    .evidence-foot span { display:inline-flex; align-items:center; gap:7px; }
+    .evidence-foot i { width:5px; height:5px; background:var(--accent); border-radius:50%; }
+
+    /* BRIDGE */
+    .bridge { position:relative; overflow:clip; padding:118px 0; background:var(--ink); color:var(--bg); }
+    .bridge::before { content:""; position:absolute; inset:0; opacity:.06; background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); background-size:180px; }
+    .bridge .shell { position:relative; }
+    .bridge .section-title { max-width:900px; }
+    .bridge .section-lede { color:rgba(245,240,232,.76); }
+    .catalog-scroll { position:relative; height:430vh; margin-top:62px; }
+    .commerce-studio { overflow:hidden; border:1px solid rgba(245,240,232,.15); border-radius:18px; background:var(--bg); color:var(--ink); box-shadow:0 30px 100px rgba(0,0,0,.36); }
+    .catalog-scroll .commerce-studio { position:sticky; top:78px; height:min(820px,calc(100vh - 96px)); min-height:680px; margin:0; }
+    .studio-scaler { height:100%; }
+    .studio-toolbar { position:relative; display:flex; align-items:center; gap:10px; min-height:58px; padding:0 18px; border-bottom:1px solid var(--border-2); background:#F8F5EF; }
+    .studio-toolbar img { width:20px; height:20px; }
+    .studio-toolbar strong { font-size:13px; font-weight:500; }
+    .studio-toolbar small { color:var(--ink-3); font:400 10.5px/1 var(--mono); text-transform:uppercase; }
+    .comparison-track { display:flex; align-items:center; gap:5px; margin-left:auto; padding:4px; border:1px solid var(--border); border-radius:999px; background:var(--bg-2); }
+    .comparison-track span { padding:6px 8px; border-radius:999px; color:var(--ink-3); font:500 10.5px/1 var(--mono); letter-spacing:.04em; text-transform:uppercase; transition:.25s ease; }
+    .comparison-track b { color:rgba(26,20,16,.28); font-size:10px; font-weight:400; }
+    .comparison-track span.active { background:var(--ink); color:var(--bg); }
+    .studio-toolbar .sync-state { margin-left:0; }
+    .catalog-progress { position:absolute; left:0; right:0; bottom:-1px; height:2px; overflow:hidden; background:rgba(26,20,16,.06); }
+    .catalog-progress span { display:block; width:0; height:100%; background:var(--accent); transition:width .38s cubic-bezier(.16,1,.3,1); }
+    .sync-state { display:inline-flex; align-items:center; gap:7px; color:var(--positive); font:500 10.5px/1 var(--mono); letter-spacing:.06em; text-transform:uppercase; }
+    .sync-state::before { content:""; width:6px; height:6px; border-radius:50%; background:var(--positive); box-shadow:0 0 0 4px var(--positive-bg); }
+    .studio-grid { display:grid; grid-template-columns:340px minmax(0,1fr); min-height:790px; }
+    .catalog-scroll .studio-grid { height:calc(100% - 58px); min-height:0; }
+    .source-editor { display:flex; flex-direction:column; min-width:0; border-right:1px solid var(--border-2); background:#E7E0D5; transition:opacity .35s ease,box-shadow .35s ease; }
+    .catalog-scroll .source-editor { overflow:hidden; }
+    .editor-head { display:flex; align-items:center; gap:14px; padding:22px 23px; border-bottom:1px solid var(--border); }
+    .editor-head div:first-child { min-width:0; }
+    .editor-head small { display:block; color:var(--ink-3); font:500 11px/1 var(--mono); letter-spacing:.07em; text-transform:uppercase; }
+    .before-pill { display:inline-flex; margin-right:6px; padding:4px 6px; border-radius:4px; background:var(--accent); color:var(--bg); letter-spacing:.06em; }
+    .editor-head strong { display:block; margin-top:7px; font-size:14px; font-weight:500; }
+    .editor-score { margin-left:auto; text-align:right; }
+    .editor-score b { font-size:28px; font-weight:400; letter-spacing:-.04em; }
+    .editor-score span { color:var(--ink-3); font:400 10.5px/1 var(--mono); text-transform:uppercase; }
+    .editor-fields { display:flex; flex:1; flex-direction:column; min-height:0; padding:5px 23px 18px; }
+    .editor-field { display:flex; flex:1; flex-direction:column; justify-content:center; min-height:0; padding:16px 0; border-bottom:1px solid rgba(26,20,16,.1); }
+    .editor-field:nth-child(2) { flex:1.75; }
+    .editor-field:last-child { flex:1.15; }
+    .editor-field:last-child { border-bottom:0; }
+    .editor-field label { display:flex; align-items:center; justify-content:space-between; gap:10px; color:var(--ink-3); font:500 11px/1.35 var(--mono); letter-spacing:.06em; text-transform:uppercase; }
+    .editor-field label span { color:var(--accent); }
+    .editor-field p { margin:10px 0 0; color:var(--ink-2); font-size:14px; line-height:1.58; }
+    .editor-empty { margin-top:10px; padding:13px; border:1px dashed var(--border-2); border-radius:6px; color:var(--ink-3); font:400 11px/1.5 var(--mono); }
+    .output-studio { position:relative; min-width:0; background:#FBF9F5; transition:box-shadow .35s ease; }
+    .catalog-scroll .output-studio { height:100%; overflow:hidden; }
+    .output-tabs { display:flex; align-items:center; gap:5px; min-height:54px; padding:11px 13px; overflow:auto; border-bottom:1px solid var(--border); background:var(--bg); }
+    .output-tabs::before { display:none; align-items:center; min-height:30px; color:var(--ink); font:500 10.5px/1 var(--mono); letter-spacing:.06em; text-transform:uppercase; }
+    .output-side-label { display:inline-flex; align-items:center; align-self:stretch; margin-right:3px; padding:0 10px; border-radius:5px; background:var(--positive); color:#fff; font:500 10.5px/1 var(--mono); letter-spacing:.08em; text-transform:uppercase; }
+    .output-tab { padding:9px 11px; border:1px solid transparent; border-radius:6px; background:transparent; color:var(--ink-3); font-size:12px; cursor:pointer; white-space:nowrap; }
+    .output-tab.active { border-color:var(--ink); background:var(--ink); color:var(--bg); }
+    .output-pane { display:none; min-height:732px; animation:fade-up .3s ease both; }
+    .output-pane.active { display:block; }
+    .catalog-scroll .output-pane { height:calc(100% - 54px); min-height:0; }
+    .pdp-output { display:grid; grid-template-columns:38% 62%; min-height:732px; }
+    .catalog-scroll .pdp-output { height:100%; min-height:0; transition:grid-template-columns .65s cubic-bezier(.16,1,.3,1); }
+    .pdp-gallery { position:relative; display:flex; flex-direction:column; border-right:1px solid var(--border); background:#F1EDE6; }
+    .catalog-scroll .pdp-gallery { min-width:0; }
+    .pdp-gallery-main { position:relative; display:grid; flex:1; place-items:center; min-height:520px; overflow:hidden; }
+    .catalog-scroll .pdp-gallery-main { min-height:0; }
+    .pdp-gallery-main::after { content:""; position:absolute; width:270px; height:38px; bottom:70px; border-radius:50%; background:rgba(26,20,16,.12); filter:blur(14px); }
+    .pdp-gallery-main { transition:background-color .25s ease; }
+    .pdp-gallery-main.photo-view { background:#F1EDE6; }
+    .pdp-gallery-main.photo-view::after { opacity:0; }
+    .pdp-gallery-main img { position:relative; z-index:1; width:82%; height:82%; object-fit:contain; transition:opacity .18s ease,transform .35s cubic-bezier(.16,1,.3,1); }
+    .pdp-gallery-main.changing img { opacity:0; transform:scale(.985); }
+    .pdp-media-index { position:absolute; z-index:2; right:15px; top:15px; padding:6px 8px; border:1px solid var(--border); border-radius:999px; background:rgba(245,240,232,.95); color:var(--ink-2); font:400 10.5px/1 var(--mono); }
+    .pdp-thumbs { display:flex; gap:7px; padding:12px; border-top:1px solid var(--border); }
+    .pdp-thumb { width:48px; height:55px; display:grid; place-items:center; overflow:hidden; padding:0; border:1px solid var(--border); border-radius:6px; background:var(--bg); cursor:pointer; }
+    .pdp-thumb.active { border-color:var(--accent); }
+    .pdp-thumb img { width:100%; height:100%; object-fit:contain; padding:4px; }
+    .pdp-copy { padding:25px 29px 22px; transition:opacity .35s ease,padding .55s cubic-bezier(.16,1,.3,1); }
+    .catalog-scroll .pdp-copy { overflow:hidden; }
+    .pdp-copy-brand { color:var(--ink-3); font:500 10px/1 var(--mono); letter-spacing:.08em; text-transform:uppercase; }
+    .pdp-copy h3 { margin:9px 0 8px; font:300 italic 36px/1.02 var(--serif); letter-spacing:-.025em; }
+    .pdp-review { display:flex; align-items:center; gap:8px; color:var(--accent); font-size:10px; }
+    .pdp-review span { color:var(--ink-3); }
+    .pdp-price { display:flex; align-items:baseline; gap:9px; margin-top:9px; }
+    .pdp-price strong { color:var(--ink); font-size:21px; font-weight:500; letter-spacing:-.02em; }
+    .pdp-price span { color:var(--ink-3); font:400 9px/1 var(--mono); letter-spacing:.04em; text-transform:uppercase; }
+    .pdp-story { margin-top:14px; }
+    .pdp-description { margin:0; color:var(--ink-2); font-size:14px; line-height:1.56; }
+    .pdp-description + .pdp-description { margin-top:15px; }
+    .pdp-key-details { display:grid; grid-template-columns:1fr 1fr; column-gap:21px; margin:17px 0 0; padding:0; border-top:1px solid var(--border-2); list-style:none; }
+    .pdp-key-detail { display:grid; grid-template-columns:5px minmax(0,1fr); gap:9px; align-items:start; min-height:39px; padding:9px 0; border-bottom:1px solid var(--border); color:var(--ink-2); font-size:11.5px; line-height:1.45; }
+    .pdp-key-detail::before { content:""; width:4px; height:4px; margin-top:5px; border-radius:50%; background:var(--accent); }
+    .pdp-purchase { margin-top:15px; padding-top:13px; border-top:1px solid var(--border-2); }
+    .pdp-option-head { display:flex; align-items:center; justify-content:space-between; gap:12px; color:var(--ink-3); font-size:11px; }
+    .pdp-option-head strong { color:var(--ink); font-size:11.5px; font-weight:500; }
+    .pdp-option-head strong span { color:var(--ink-2); font-weight:400; }
+    .pdp-option-head > span { font:400 8.5px/1 var(--mono); letter-spacing:.04em; text-transform:uppercase; }
+    .pdp-color-option { display:inline-flex; align-items:center; gap:8px; min-height:36px; margin-top:8px; padding:4px 11px 4px 6px; border:1px solid var(--ink); border-radius:6px; background:var(--bg); color:var(--ink-2); font-size:10.5px; }
+    .variant-swatch { width:21px; height:21px; border:3px solid var(--bg); border-radius:50%; background:#172638; box-shadow:0 0 0 1px var(--ink); }
+    .pdp-size-head { margin-top:12px; }
+    .pdp-size-options { display:grid; grid-template-columns:repeat(7,minmax(0,1fr)); gap:6px; margin-top:8px; }
+    .pdp-size { min-height:36px; padding:0 4px; border:1px solid var(--border-2); border-radius:5px; background:var(--bg); color:var(--ink-2); font:500 10.5px/1 var(--sans); cursor:pointer; transition:background-color .18s ease,border-color .18s ease,color .18s ease; }
+    .pdp-size:hover { border-color:rgba(26,20,16,.48); }
+    .pdp-size.active { border-color:var(--ink); background:var(--ink); color:var(--bg); }
+    .pdp-buy { display:grid; width:100%; place-items:center; min-height:48px; margin-top:11px; border:0; border-radius:999px; background:var(--accent); color:var(--bg); font-size:12px; font-weight:500; cursor:pointer; transition:background-color .2s ease,transform .2s ease; }
+    .pdp-buy:hover { background:var(--accent-h); transform:translateY(-1px); }
+    .pdp-buy.added { background:var(--positive); }
+    .full-output { padding:27px 30px 30px; }
+    .catalog-scroll .full-output { height:100%; overflow:hidden; }
+    .output-title { display:flex; align-items:end; justify-content:space-between; gap:20px; padding-bottom:24px; border-bottom:1px solid var(--border); }
+    .output-title h3 { margin:0; font:300 italic 36px/1 var(--serif); }
+    .output-title span { color:var(--positive); font:500 10.5px/1 var(--mono); text-transform:uppercase; }
+    .search-preview-large { margin-top:25px; overflow:hidden; border:1px solid #DADCE0; border-radius:12px; background:#fff; box-shadow:0 12px 32px rgba(26,20,16,.06); color:#202124; }
+    .serp-search-shell { padding:17px 22px 0; border-bottom:1px solid #ECEFF1; }
+    .serp-search-input { display:flex; align-items:center; gap:12px; width:min(100%,680px); min-height:46px; padding:0 16px; border:1px solid #DFE1E5; border-radius:999px; box-shadow:0 1px 2px rgba(60,64,67,.08); font-size:13px; }
+    .serp-search-input img { width:18px; height:18px; object-fit:contain; }
+    .serp-search-input span { flex:1; }
+    .serp-search-input i { color:#70757A; font-style:normal; font-size:17px; }
+    .serp-search-input b { color:#4285F4; font-size:17px; font-weight:400; }
+    .serp-search-nav { display:flex; align-items:center; gap:22px; min-height:39px; padding-left:47px; color:#5F6368; font-size:11px; }
+    .serp-search-nav span { display:flex; align-items:center; align-self:stretch; border-bottom:2px solid transparent; }
+    .serp-search-nav .active { border-color:#1A73E8; color:#1A73E8; }
+    .serp-search-nav em { margin-left:auto; font-style:normal; }
+    .serp-organic-result { position:relative; max-width:760px; padding:20px 118px 22px 26px; }
+    .serp-source-row { display:flex; align-items:center; gap:10px; }
+    .serp-favicon { display:grid; width:26px; height:26px; place-items:center; border-radius:50%; background:#171717; color:#fff; font:500 11px/1 var(--sans); }
+    .serp-source-row b { display:block; color:#202124; font-size:12px; font-weight:500; }
+    .serp-source-row small { display:block; margin-top:2px; color:#4D5156; font-size:10.5px; }
+    .serp-organic-result > strong { display:block; margin-top:10px; color:#1A0DAB; font-size:20px; font-weight:400; line-height:1.25; }
+    .serp-organic-result > p { margin:7px 0 0; color:#4D5156; font-size:13px; line-height:1.55; }
+    .serp-product-thumb { position:absolute; right:19px; top:25px; display:grid; width:82px; height:106px; place-items:center; overflow:hidden; border:1px solid #E4E6E9; border-radius:9px; background:#F7F7F7; }
+    .serp-product-thumb img { width:82%; height:88%; object-fit:contain; }
+    .serp-rich-result { display:flex; align-items:center; gap:12px; margin-top:10px; color:#4D5156; font-size:11px; }
+    .serp-rich-result strong { color:#188038; font-size:11px; font-weight:500; }
+    .serp-rating { color:#B06000; }
+    .output-field-list { margin-top:24px; border-top:1px solid var(--border); }
+    .output-field-row { display:grid; grid-template-columns:132px 1fr auto; gap:20px; padding:19px 0; border-bottom:1px solid var(--border); }
+    .output-field-row label { color:var(--ink-3); font:500 10.5px/1.4 var(--mono); letter-spacing:.06em; text-transform:uppercase; }
+    .output-field-row p { margin:0; color:var(--ink-2); font-size:13.5px; line-height:1.55; }
+    .output-field-row em { color:var(--positive); font:500 10px/1 var(--mono); font-style:normal; text-transform:uppercase; }
+    #output-attributes .full-output,#output-qa .full-output { display:flex; flex-direction:column; }
+    .attribute-grid { display:grid; flex:1; grid-template-columns:1fr 1fr; grid-auto-rows:minmax(0,1fr); gap:9px; min-height:0; margin-top:20px; }
+    .attribute { display:flex; align-items:center; justify-content:space-between; gap:16px; min-height:0; padding:13px 14px; border:1px solid var(--border-2); border-radius:7px; background:var(--bg); }
+    .attribute label { color:var(--ink-3); font:400 11px/1.4 var(--mono); text-transform:uppercase; }
+    .attribute strong { max-width:66%; text-align:right; font-size:13px; font-weight:500; line-height:1.4; }
+    .qa-list { display:grid; flex:1; grid-template-columns:1fr 1fr; grid-auto-rows:minmax(0,1fr); gap:12px; min-height:0; margin-top:24px; }
+    .qa-item { display:flex; flex-direction:column; justify-content:center; padding:21px; border:1px solid var(--border); border-radius:9px; background:var(--bg); }
+    .qa-item strong { display:block; font-size:14px; font-weight:500; line-height:1.35; }
+    .qa-item p { margin:10px 0 0; color:var(--ink-2); font-size:13px; line-height:1.58; }
+    .catalog-transform[data-transform-phase="before"] .pdp-output { grid-template-columns:100% 0%; }
+    .catalog-transform[data-transform-phase="before"] .pdp-copy { overflow:hidden; padding-inline:0; opacity:0; }
+    .catalog-transform[data-transform-phase="work"] .pdp-copy { opacity:.08; pointer-events:none; }
+    .catalog-transform[data-transform-phase="before"] .source-editor { box-shadow:inset 3px 0 0 var(--accent); }
+    .catalog-transform[data-transform-phase="pdp"] .output-studio,
+    .catalog-transform[data-transform-phase="seo"] .output-studio,
+    .catalog-transform[data-transform-phase="attributes"] .output-studio,
+    .catalog-transform[data-transform-phase="qa"] .output-studio { box-shadow:inset 3px 0 0 var(--positive); }
+    .catalog-transform[data-transform-phase="before"] .output-tabs::before { content:"Before · Original catalog media"; display:flex; }
+    .catalog-transform[data-transform-phase="work"] .output-tabs::before { content:"Carve works · Building the product model"; display:flex; color:var(--accent); }
+    .catalog-transform[data-transform-phase="before"] .output-tabs > *,
+    .catalog-transform[data-transform-phase="work"] .output-tabs > * { display:none; }
+    .work-overlay { position:absolute; z-index:8; left:38%; right:0; top:54px; bottom:0; display:flex; flex-direction:column; justify-content:center; padding:27px 28px; background:rgba(251,249,245,.98); opacity:0; transform:translateX(18px); pointer-events:none; transition:opacity .38s ease,transform .55s cubic-bezier(.16,1,.3,1); }
+    .catalog-transform[data-transform-phase="work"] .work-overlay { opacity:1; transform:none; }
+    .work-overlay > small { color:var(--accent); font:500 11px/1.3 var(--mono); letter-spacing:.08em; text-transform:uppercase; }
+    .work-overlay h3 { max-width:570px; margin:11px 0 19px; font:300 italic 32px/1.07 var(--serif); letter-spacing:-.02em; }
+    .work-stack { display:grid; gap:7px; }
+    .work-card { display:grid; grid-template-columns:31px 1fr auto; gap:11px; align-items:start; padding:11px 12px; border:1px solid var(--border); border-radius:8px; background:var(--bg); opacity:0; transform:translateY(8px); }
+    .catalog-transform[data-transform-phase="work"] .work-card { animation:work-card-in .46s cubic-bezier(.16,1,.3,1) forwards; }
+    .catalog-transform[data-transform-phase="work"] .work-card:nth-child(2) { animation-delay:.18s; }
+    .catalog-transform[data-transform-phase="work"] .work-card:nth-child(3) { animation-delay:.36s; }
+    .catalog-transform[data-transform-phase="work"] .work-card:nth-child(4) { animation-delay:.54s; }
+    .work-index { color:rgba(139,74,44,.5); font:300 italic 21px/1 var(--serif); }
+    .work-card strong { display:block; font-size:12px; font-weight:500; }
+    .work-card p { margin:5px 0 0; color:var(--ink-2); font-size:11px; line-height:1.5; }
+    .work-card em { color:var(--positive); font:500 9.5px/1 var(--mono); font-style:normal; text-transform:uppercase; white-space:nowrap; }
+    .catalog-scroll-cue { position:absolute; left:50%; bottom:24px; display:flex; align-items:center; gap:8px; transform:translateX(-50%); color:rgba(245,240,232,.7); font:400 9px/1 var(--mono); letter-spacing:.04em; text-transform:uppercase; }
+    .catalog-scroll-cue::after { content:"↓"; color:#D6B89A; }
+    @keyframes work-card-in { to{opacity:1;transform:none} }
+    .bridge-note { margin:25px auto 0; max-width:730px; text-align:center; color:rgba(245,240,232,.72); font-size:12px; line-height:1.6; }
+
+    /* DEMAND */
+    .demand { position:relative; min-height:280vh; padding:0; background:var(--bg-2); }
+    .demand-grid { position:sticky; top:64px; display:grid; grid-template-columns:.64fr 1.36fr; gap:60px; align-items:center; min-height:calc(100vh - 64px); padding:clamp(34px,6vh,68px) 0; }
+    .demand-title { margin:0 0 18px; font-size:clamp(41px,4.6vw,62px); line-height:1.02; letter-spacing:-.03em; }
+    .demand-copy { color:var(--ink-2); font-size:16px; line-height:1.7; font-weight:300; }
+    .metric-receipts { display:grid; gap:9px; margin-top:28px; }
+    .metric-receipt { display:flex; align-items:center; gap:10px; color:var(--ink-3); font-size:12px; line-height:1.45; }
+    .metric-receipt img { width:17px; height:17px; }
+    .commerce-dashboard { display:flex; flex-direction:column; overflow:hidden; border:1px solid var(--border-2); border-radius:15px; background:var(--bg); box-shadow:0 20px 60px rgba(26,20,16,.09); }
+    .dashboard-head { display:flex; align-items:center; gap:12px; padding:16px 18px; border-bottom:1px solid var(--border); }
+    .dashboard-head img { width:25px; height:25px; }
+    .dashboard-head strong { display:block; font-size:13px; font-weight:500; }
+    .dashboard-head small { display:block; margin-top:4px; color:var(--ink-3); font-size:10.5px; }
+    .date-filter { margin-left:auto; padding:8px 10px; border:1px solid var(--border-2); border-radius:6px; color:var(--ink-2); font:400 10px/1 var(--mono); }
+    .dashboard-tabs { display:flex; gap:4px; padding:10px 12px 0; overflow:auto; }
+    .demand-tab { padding:9px 11px; border:0; border-radius:6px; background:transparent; color:var(--ink-3); font-size:11px; cursor:pointer; white-space:nowrap; transition:background-color .32s cubic-bezier(.16,1,.3,1),color .28s ease,transform .32s cubic-bezier(.16,1,.3,1); }
+    .demand-tab.active { background:var(--ink); color:var(--bg); transform:translateY(-1px); }
+    .dashboard-body { padding:12px; transition:opacity .16s ease,transform .24s cubic-bezier(.4,0,1,1),filter .16s ease; will-change:opacity,transform,filter; }
+    .commerce-dashboard.is-switching .dashboard-body { opacity:0; transform:translateY(4px); filter:blur(1.5px); }
+    .commerce-dashboard.view-changed .dashboard-body { animation:dashboard-view-in .48s cubic-bezier(.16,1,.3,1) both; }
+    @keyframes dashboard-view-in { from{opacity:0;transform:translateY(5px);filter:blur(1.5px)} to{opacity:1;transform:none;filter:none} }
+    .kpi-grid { display:grid; grid-template-columns:repeat(4,1fr); border:1px solid var(--border); border-radius:9px; background:rgba(237,231,220,.42); }
+    .kpi { padding:13px; border-right:1px solid var(--border); }
+    .kpi:last-child { border-right:0; }
+    .kpi label { color:var(--ink-3); font:500 10px/1.3 var(--mono); letter-spacing:.05em; text-transform:uppercase; }
+    .kpi strong { display:block; margin-top:7px; font-size:20px; font-weight:400; letter-spacing:-.04em; }
+    .kpi small { display:block; margin-top:5px; color:var(--positive); font:400 10px/1.2 var(--mono); }
+    .analytics-grid { display:grid; grid-template-columns:1.22fr .78fr; gap:10px; margin-top:10px; }
+    .chart-card,.query-card { overflow:hidden; border:1px solid var(--border); border-radius:9px; }
+    .chart-head,.query-head { display:flex; align-items:center; justify-content:space-between; gap:12px; padding:11px 12px; border-bottom:1px solid var(--border); }
+    .chart-head strong,.query-head strong { font-size:12px; font-weight:500; }
+    .chart-head span,.query-head span { color:var(--ink-3); font:400 10px/1 var(--mono); }
+    .chart-wrap { position:relative; height:142px; padding:10px 10px 3px; background:linear-gradient(rgba(26,20,16,.035) 1px,transparent 1px); background-size:100% 34px; }
+    .chart-wrap svg { width:100%; height:100%; overflow:visible; }
+    .chart-path { fill:none; stroke:var(--accent); stroke-width:2.2; stroke-linecap:round; stroke-linejoin:round; vector-effect:non-scaling-stroke; transition:.35s ease; }
+    .chart-area { fill:url(#chartGradient); opacity:.5; transition:.35s ease; }
+    .chart-dot { fill:var(--bg); stroke:var(--accent); stroke-width:2; }
+    .chart-tooltip { position:absolute; top:20px; right:22px; padding:7px 8px; border:1px solid var(--border); border-radius:6px; background:rgba(245,240,232,.92); box-shadow:0 5px 14px rgba(26,20,16,.08); }
+    .chart-tooltip b { display:block; font-size:11px; font-weight:500; }
+    .chart-tooltip span { color:var(--ink-3); font:400 10px/1.2 var(--mono); }
+    .query-table { width:100%; border-collapse:collapse; }
+    .query-table td { padding:10px 11px; border-bottom:1px solid var(--border); color:var(--ink-2); font-size:10.5px; line-height:1.4; }
+    .query-table tr:last-child td { border-bottom:0; }
+    .query-table td:first-child { color:var(--ink); }
+    .query-table td:last-child { text-align:right; font:400 10px/1.3 var(--mono); }
+    .data-action { display:grid; grid-template-columns:auto 1fr auto; gap:9px; align-items:center; margin-top:10px; padding:11px 12px; border:1px solid rgba(139,74,44,.2); border-radius:8px; background:var(--accent-bg); }
+    .data-action img { width:20px; height:20px; }
+    .data-action strong { display:block; color:var(--accent); font-size:11.5px; font-weight:500; }
+    .data-action p { margin:4px 0 0; color:var(--ink-2); font-size:10.5px; line-height:1.45; }
+    .data-action span { color:var(--accent); font-size:14px; }
+    .dashboard-foot { display:flex; align-items:center; gap:8px; padding:11px 14px; border-top:1px solid var(--border); color:var(--ink-3); font-size:10.5px; line-height:1.45; }
+    .dashboard-foot img { width:13px; height:13px; }
+
+    @media (min-width:981px) {
+      .commerce-dashboard { height:572px; }
+      .dashboard-body { display:grid; flex:1; grid-template-rows:auto minmax(0,1fr) auto; gap:10px; min-height:0; }
+      .analytics-grid,.data-action { margin-top:0; }
+      .chart-card,.query-card { height:100%; }
+      .chart-card,.query-card { display:flex; flex-direction:column; }
+      .chart-wrap { flex:1; height:auto; min-height:142px; }
+      .query-table { height:100%; }
+      .query-table tr { height:25%; }
+    }
+    @media (min-width:981px) and (max-width:1100px) {
+      .commerce-dashboard { height:596px; }
+    }
+
+    /* PRODUCTS */
+    .products { padding:124px 0; }
+    .products-intro { display:flex; align-items:end; justify-content:space-between; gap:42px; }
+    .products-intro .section-lede { max-width:430px; }
+    .story-scroll { display:grid; grid-template-columns:1.05fr .95fr; gap:74px; align-items:start; margin-top:78px; }
+    .story-sticky { position:sticky; top:92px; overflow:hidden; border:1px solid var(--border-2); border-radius:18px; background:var(--bg-2); box-shadow:0 22px 65px rgba(26,20,16,.1); }
+    .story-appbar { display:flex; align-items:center; gap:8px; padding:14px 16px; border-bottom:1px solid var(--border); background:rgba(245,240,232,.72); }
+    .story-appbar img { width:19px; height:19px; }
+    .story-appbar strong { font-size:11.5px; font-weight:500; }
+    .story-appbar span { margin-left:auto; color:var(--positive); font:500 10px/1 var(--mono); text-transform:uppercase; }
+    .story-media { position:relative; height:390px; overflow:hidden; background:#F4F1EA; }
+    .story-media img { width:100%; height:100%; object-fit:cover; transition:opacity .25s ease,transform .55s cubic-bezier(.16,1,.3,1); }
+    .story-media.contain img { object-fit:contain; padding:8%; }
+    .story-media.swapping img { opacity:0; transform:scale(.985); }
+    .media-count { position:absolute; right:13px; top:13px; padding:6px 8px; border:1px solid rgba(26,20,16,.14); border-radius:999px; background:rgba(245,240,232,.95); color:var(--ink-2); font:400 10px/1 var(--mono); }
+    .story-pdp { padding:20px; border-top:1px solid var(--border); }
+    .story-brand { color:var(--ink-3); font:500 10px/1 var(--mono); letter-spacing:.07em; text-transform:uppercase; }
+    .story-pdp h3 { margin:8px 0 12px; font-size:20px; font-weight:500; }
+    .story-variant { display:flex; gap:5px; flex-wrap:wrap; }
+    .story-variant span { padding:6px 7px; border:1px solid var(--border-2); border-radius:5px; color:var(--ink-2); font:400 10px/1 var(--mono); }
+    .model-table { margin-top:17px; border-top:1px solid var(--border); }
+    .model-row { display:grid; grid-template-columns:72px 1fr auto; gap:10px; padding:10px 0; border-bottom:1px solid var(--border); }
+    .model-row label { color:var(--ink-3); font:500 10px/1.4 var(--mono); text-transform:uppercase; }
+    .model-row p { margin:0; color:var(--ink-2); font-size:11.5px; line-height:1.5; }
+    .model-row span { color:var(--positive); font:500 10px/1 var(--mono); }
+    .story-steps { display:grid; }
+    .scroll-step { min-height:76vh; display:flex; flex-direction:column; justify-content:center; padding:58px 0; opacity:.34; transition:opacity .35s ease; cursor:pointer; }
+    .scroll-step.active { opacity:1; }
+    .step-number { color:var(--accent); font:300 italic 38px/1 var(--serif); }
+    .step-product { margin-top:18px; color:var(--ink-3); font:500 10px/1.4 var(--mono); letter-spacing:.08em; text-transform:uppercase; }
+    .scroll-step h3 { margin:13px 0 25px; font:300 italic clamp(36px,4.3vw,56px)/1.01 var(--serif); letter-spacing:-.03em; }
+    .step-insights { border-top:1px solid var(--border-2); }
+    .step-insight { display:grid; grid-template-columns:84px 1fr; gap:14px; padding:14px 0; border-bottom:1px solid var(--border); }
+    .step-insight strong { color:var(--ink-3); font:500 10px/1.4 var(--mono); letter-spacing:.06em; text-transform:uppercase; }
+    .step-insight p { margin:0; color:var(--ink-2); font-size:13px; line-height:1.58; }
+    .story-source { display:inline-flex; align-items:center; gap:7px; align-self:flex-start; margin-top:18px; color:var(--ink-3); font:400 10px/1.4 var(--mono); letter-spacing:.05em; text-transform:uppercase; }
+    .story-source::before { content:"↗"; color:var(--accent); font-size:11px; }
+    .story-source:hover { color:var(--ink); }
+
+    /* EVIDENCE */
+    .evidence { padding:112px 0; background:var(--bg-2); }
+    .evidence-grid { display:grid; grid-template-columns:1fr 1fr; gap:70px; align-items:center; }
+    .evidence-list { border-top:1px solid var(--border-2); }
+    .evidence-item { display:grid; grid-template-columns:38px 1fr auto; gap:16px; align-items:center; padding:19px 0; border-bottom:1px solid var(--border); }
+    .evidence-num { color:rgba(139,74,44,.4); font:300 italic 24px/1 var(--serif); }
+    .evidence-item strong { display:block; font-size:14px; font-weight:500; }
+    .evidence-item small { display:block; margin-top:4px; color:var(--ink-3); font-size:12px; }
+    .evidence-role { color:var(--ink-3); font:500 10px/1 var(--mono); letter-spacing:.08em; text-transform:uppercase; }
+    .evidence-quote { margin-top:30px; padding-left:22px; border-left:2px solid var(--accent); color:var(--ink-2); font:300 italic 27px/1.3 var(--serif); }
+
+    /* CTA */
+    .final { position:relative; overflow:hidden; padding:108px 0 40px; background:var(--ink); color:var(--bg); }
+    .final-inner { position:relative; }
+    .final-grid { display:grid; grid-template-columns:1fr .92fr; gap:78px; align-items:center; }
+    .final-copy { position:relative; z-index:2; }
+    .final h2 { max-width:700px; margin:0; font-size:clamp(48px,5.5vw,76px); line-height:.98; letter-spacing:-.03em; }
+    .final p { max-width:530px; margin:25px 0 0; color:rgba(245,240,232,.74); font-size:16px; line-height:1.65; font-weight:300; }
+    .final .button { margin-top:34px; background:var(--bg); color:var(--ink); }
+    .final-products { position:relative; height:520px; perspective:1000px; }
+    .audit-product-card { position:absolute; overflow:hidden; width:300px; border:1px solid rgba(245,240,232,.15); border-radius:15px; background:var(--bg); color:var(--ink); box-shadow:0 28px 65px rgba(0,0,0,.35); transition:transform .35s cubic-bezier(.16,1,.3,1); }
+    .audit-product-card:nth-child(1) { z-index:3; left:8%; top:60px; transform:rotate(-3deg); }
+    .audit-product-card:nth-child(2) { z-index:2; right:2%; top:4px; transform:rotate(5deg) scale(.9); }
+    .audit-product-card:nth-child(3) { z-index:1; right:0; bottom:5px; transform:rotate(9deg) scale(.82); }
+    .audit-product-card:hover { z-index:5; transform:rotate(0) translateY(-8px) scale(1); }
+    .audit-product-image { height:245px; display:grid; place-items:center; background:#F1EDE6; }
+    .audit-product-image img { width:84%; height:84%; object-fit:contain; }
+    .audit-product-copy { padding:15px 16px 17px; border-top:1px solid var(--border); }
+    .audit-product-copy small { color:var(--ink-3); font:500 10px/1 var(--mono); text-transform:uppercase; }
+    .audit-product-copy strong { display:block; margin-top:7px; font-size:14px; font-weight:500; }
+    .audit-product-opportunity { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-top:13px; padding-top:11px; border-top:1px solid var(--border); color:var(--ink-2); font-size:10px; }
+    .audit-product-opportunity span { color:var(--positive); font:500 10px/1 var(--mono); text-transform:uppercase; }
+    .final-actions { display:grid; grid-template-columns:repeat(2,190px); gap:10px; margin-top:34px; }
+    .final .final-actions .button { width:100%; min-height:48px; margin:0; padding-inline:16px; font-size:13px; }
+    .final .final-actions .button.primary { background:var(--bg); color:var(--ink); }
+    .final .final-actions .button.ghost { border-color:rgba(245,240,232,.28); background:transparent; color:var(--bg); }
+    .final .final-actions .button.ghost:hover { border-color:rgba(245,240,232,.5); background:rgba(245,240,232,.06); }
+    .site-footer { margin-top:92px; padding:64px 0 34px; border-top:1px solid rgba(245,240,232,.14); color:rgba(245,240,232,.72); }
+    .footer-grid { display:grid; grid-template-columns:1.32fr .74fr .82fr .82fr; gap:clamp(36px,6vw,82px); }
+    .footer-brand .brand-lockup { width:118px; opacity:.98; }
+    .footer-brand-copy { max-width:245px; margin-top:27px; color:rgba(245,240,232,.76); font-size:14px; line-height:1.55; }
+    .footer-social { display:inline-flex; margin-top:24px; color:rgba(245,240,232,.7); transition:color .2s ease; }
+    .footer-social:hover { color:var(--bg); }
+    .footer-column-title { color:rgba(245,240,232,.67); font:500 11px/1 var(--sans); letter-spacing:.1em; text-transform:uppercase; }
+    .footer-column-links { display:grid; gap:17px; margin-top:27px; }
+    .footer-column-links a { color:rgba(245,240,232,.76); font-size:14px; line-height:1.35; transition:color .2s ease; }
+    .footer-column-links a:hover { color:var(--bg); }
+    .footer-bottom { display:flex; align-items:center; justify-content:space-between; gap:18px; margin-top:54px; padding-top:22px; border-top:1px solid rgba(245,240,232,.1); color:rgba(245,240,232,.54); font-size:11px; }
+    .footer-legal { display:flex; gap:18px; }
+
+    @media (min-width:981px) {
+      .catalog-scroll .studio-scaler { width:133.34%; height:133.34%; transform:scale(.75); transform-origin:top left; }
+    }
+
+    @media (max-height:820px) and (min-width:981px) {
+      .catalog-scroll .commerce-studio { top:70px; height:calc(100vh - 82px); min-height:0; }
+      .catalog-scroll .studio-scaler { width:153.85%; height:153.85%; transform:scale(.65); }
+      .editor-field { padding-block:16px; }
+      .pdp-copy { padding-block:22px 10px; }
+      .pdp-description + .pdp-description { margin-top:12px; }
+      .pdp-key-details { margin-top:14px; }
+      .pdp-key-detail { min-height:36px; padding-block:8px; }
+      .pdp-purchase { margin-top:12px; padding-top:10px; }
+      .pdp-color-option { min-height:34px; margin-top:7px; }
+      .pdp-size-head { margin-top:10px; }
+      .pdp-size-options { margin-top:7px; }
+      .pdp-size { min-height:34px; }
+      .pdp-buy { min-height:44px; margin-top:9px; }
+    }
+    @media (max-height:680px) and (min-width:981px) {
+      .catalog-scroll .studio-scaler { width:185.19%; height:185.19%; transform:scale(.54); }
+      .editor-field { padding-block:13px; }
+      .pdp-copy { padding-block:18px 12px; }
+      .pdp-story { margin-top:8px; }
+      .pdp-key-details { margin-top:10px; }
+      .pdp-purchase { margin-top:8px; padding-top:8px; }
+    }
+    @media (max-height:580px) and (min-width:981px) {
+      .catalog-scroll .studio-scaler { width:217.4%; height:217.4%; transform:scale(.46); }
+      .editor-field { padding-block:10px; }
+    }
+
+    .reveal { opacity:0; transform:translateY(18px); transition:opacity .7s ease, transform .7s cubic-bezier(.16,1,.3,1); }
+    .reveal.visible { opacity:1; transform:none; }
+    .motion-ready .channel-bar .channel { opacity:0; transform:translateY(calc(var(--settle-y) + 18px)); }
+    .motion-ready .channel-bar.motion-in .channel { opacity:1; transform:translateY(var(--settle-y)); }
+    .motion-ready .channel-bar.motion-in .channel:hover { transform:translateY(calc(var(--settle-y) - 5px)); }
+    .motion-ready .channel-bar.motion-in .channel:nth-child(1) { transition-delay:.08s; }
+    .motion-ready .channel-bar.motion-in .channel:nth-child(2) { transition-delay:.25s; }
+    .motion-ready .channel-bar.motion-in .channel:nth-child(3) { transition-delay:.42s; }
+    .motion-ready .demand .chart-path { stroke-dasharray:520; stroke-dashoffset:520; }
+    .motion-ready .demand.motion-in .chart-path { animation:draw-chart 1.35s .18s cubic-bezier(.16,1,.3,1) forwards; }
+    .motion-ready .demand .chart-area { opacity:0; transition:opacity .7s .65s ease; }
+    .motion-ready .demand.motion-in .chart-area { opacity:1; }
+    .motion-ready .final-products .audit-product-card { opacity:0; }
+    .motion-ready .final.motion-in .audit-product-card { opacity:1; }
+    .motion-ready .final.motion-in .audit-product-card:nth-child(1) { transition-delay:.08s; }
+    .motion-ready .final.motion-in .audit-product-card:nth-child(2) { transition-delay:.22s; }
+    .motion-ready .final.motion-in .audit-product-card:nth-child(3) { transition-delay:.36s; }
+    @keyframes draw-chart { to{stroke-dashoffset:0} }
+
+    @media (max-width:980px) {
+      .nav-links { display:none; }
+      .hero-grid { grid-template-columns:1fr; }
+      .hero-copy { max-width:650px; }
+      .product-stage { max-width:650px; width:100%; margin:auto; }
+      .channel-inner { grid-template-columns:1fr; }
+      .channel-intro { max-width:560px; }
+      .understanding-stage { grid-template-columns:1fr; height:auto; }
+      .understanding-photo { height:480px; min-height:0; }
+      .demand { min-height:0; padding:104px 0; }
+      .demand-grid { position:relative; top:auto; grid-template-columns:1fr; gap:48px; min-height:0; padding:0; }
+      .evidence-grid { grid-template-columns:1fr; gap:48px; }
+      .catalog-scroll { height:auto; }
+      .catalog-scroll .commerce-studio { position:relative; top:auto; height:auto; min-height:0; max-height:none; }
+      .catalog-scroll .studio-scaler { width:auto; height:auto; transform:none; }
+      .catalog-scroll .studio-grid { height:auto; min-height:790px; }
+      .catalog-scroll .source-editor { overflow:visible; }
+      .catalog-scroll .output-studio { height:auto; overflow:visible; }
+      .catalog-scroll .output-pane { height:auto; min-height:732px; }
+      .catalog-scroll .pdp-output { grid-template-columns:42% 58%; height:auto; min-height:732px; }
+      .catalog-scroll .pdp-copy { overflow:visible; padding:24px 20px; opacity:1; }
+      .catalog-scroll .full-output { height:auto; overflow:visible; }
+      .work-overlay,.catalog-scroll-cue { display:none; }
+      .studio-grid { grid-template-columns:290px minmax(0,1fr); }
+      .pdp-copy { padding:24px 20px; }
+      .story-scroll { gap:34px; }
+      .story-media { height:330px; }
+      .final-grid { gap:30px; }
+      .audit-product-card { width:255px; }
+      .audit-product-image { height:210px; }
+      .footer-grid { grid-template-columns:1.2fr 1fr; row-gap:52px; }
+    }
+    @media (max-width:700px) {
+      .shell { width:min(100% - 34px,1180px); }
+      .nav-inner { gap:12px; }
+      .nav-actions { grid-template-columns:152px; }
+      .nav-actions .button { min-height:36px; }
+      .hero { padding:52px 0 65px; }
+      .hero h1 { font-size:52px; }
+      .hero-copy { font-size:15px; }
+      .hero-actions { grid-template-columns:1fr; }
+      .product-stage { grid-template-columns:1fr; }
+      .product-canvas { min-height:500px; }
+      .product-rail { left:11px; top:70px; grid-template-columns:repeat(3,48px); }
+      .commerce-product { width:48px; height:48px; }
+      .reason-stream { min-height:540px; }
+      .reason-pipeline { padding:13px; }
+      .reason-step { font-size:9px; }
+      .stream-read { padding:27px 21px; }
+      .stream-read strong { font-size:31px; }
+      .channel-inner { grid-template-columns:1fr; }
+      .channel-bar { padding:72px 0; }
+      .channel-journey { grid-template-columns:1fr; gap:13px; }
+      .channel-journey::before,.channel-journey::after { display:none; }
+      .channel { min-height:270px; }
+      .channel:nth-child(2),.channel:nth-child(3),.channel:hover { transform:none; }
+      .understanding,.products { padding:86px 0; }
+      .section-title { font-size:46px; }
+      .understanding-stage { margin-top:42px; }
+      .understanding-photo { height:390px; min-height:0; }
+      .understanding-panel { padding:27px 21px; }
+      .panel-head { align-items:flex-start; }
+      .answer-copy { font-size:29px; }
+      .reason-row { grid-template-columns:1fr; gap:5px; }
+      .bridge,.demand,.evidence { padding:86px 0; }
+      .catalog-scroll { margin-top:44px; }
+      .studio-toolbar { flex-wrap:wrap; padding-block:12px; }
+      .comparison-track { display:none; }
+      .studio-toolbar .sync-state { width:100%; margin-left:30px; }
+      .studio-grid { grid-template-columns:1fr; }
+      .source-editor { border-right:0; border-bottom:1px solid var(--border-2); }
+      .output-pane { min-height:0; }
+      .catalog-scroll .output-pane { min-height:0; }
+      .catalog-scroll .pdp-output { grid-template-columns:1fr; min-height:0; }
+      .pdp-gallery { border-right:0; border-bottom:1px solid var(--border); }
+      .pdp-gallery-main { min-height:420px; }
+      .pdp-copy { padding:27px 21px; }
+      .pdp-copy h3 { font-size:33px; }
+      .pdp-key-details,.attribute-grid,.qa-list { grid-template-columns:1fr; }
+      .full-output { padding:24px 20px 30px; }
+      .output-field-row { grid-template-columns:1fr; gap:6px; }
+      .output-field-row em { display:none; }
+      .kpi-grid { grid-template-columns:1fr 1fr; }
+      .kpi:nth-child(2) { border-right:0; }
+      .kpi:nth-child(-n+2) { border-bottom:1px solid var(--border); }
+      .analytics-grid { grid-template-columns:1fr; }
+      .chart-wrap { height:165px; }
+      .data-action { grid-template-columns:auto 1fr; }
+      .data-action > span { display:none; }
+      .products-intro { display:block; }
+      .story-scroll { grid-template-columns:1fr; gap:22px; margin-top:48px; }
+      .story-sticky { position:relative; top:auto; }
+      .story-media { height:390px; }
+      .scroll-step { min-height:auto; padding:50px 0; opacity:1; }
+      .step-insight { grid-template-columns:1fr; gap:5px; }
+      .evidence-item { grid-template-columns:28px 1fr; }
+      .evidence-role { display:none; }
+      .final { padding-top:88px; }
+      .final-grid { grid-template-columns:1fr; }
+      .final h2 { font-size:50px; }
+      .final-actions { grid-template-columns:1fr; max-width:100%; }
+      .final-products { height:465px; margin-top:18px; }
+      .audit-product-card { width:235px; }
+      .audit-product-card:nth-child(1) { left:0; top:48px; }
+      .audit-product-card:nth-child(2) { right:-12px; top:0; }
+      .audit-product-card:nth-child(3) { right:-16px; bottom:0; }
+      .audit-product-image { height:185px; }
+      .site-footer { margin-top:76px; padding-top:48px; }
+      .footer-grid { grid-template-columns:1fr 1fr; gap:44px 26px; }
+      .footer-brand { grid-column:1 / -1; }
+      .footer-bottom { align-items:flex-start; flex-direction:column; }
+    }
+    @media (prefers-reduced-motion:reduce) {
+      html { scroll-behavior:auto; }
+      .reason-stream::before { animation:none; }
+      .reason-step.active::after { animation:none; transform:scaleX(1); }
+      .catalog-scroll .pdp-output,.work-overlay,.catalog-progress span { transition:none; }
+      .catalog-transform[data-transform-phase="work"] .work-card { animation:none; opacity:1; transform:none; }
+      .dashboard-body { transition:none; }
+      .commerce-dashboard.is-switching .dashboard-body { opacity:1; transform:none; filter:none; }
+      .commerce-dashboard.view-changed .dashboard-body { animation:none; }
+      .reveal { opacity:1; transform:none; transition:none; }
+    }
+  </style>
+</head>
+<body>
+  <nav>
+    <div class="shell nav-inner">
+      <a href="https://carve.ac/" aria-label="Carve home"><img class="brand-lockup" src="./carve-ecom-assets/lockup-black.svg" alt="Carve"></a>
+      <div class="nav-links">
+        <a href="./carve-how-it-works.html">How it works</a>
+        <a href="https://carve.ac/pricing">Pricing</a>
+      </div>
+      <div class="nav-actions">
+        <a class="button primary" href="https://calendar.app.google/TA9Xv89TnJkJidm78" target="_blank" rel="noopener noreferrer">Talk to a founder</a>
+      </div>
+    </div>
+  </nav>
+
+  <main id="top">
+    <section class="hero">
+      <div class="shell hero-grid">
+        <div>
+          <h1 class="serif">You made the products.<br><span>Can shoppers find them?</span></h1>
+          <p class="hero-copy"><strong>Carve understands the product, what the brand makes meaningful, who it’s for, and why they choose it.</strong> Then it turns that understanding into product data Google can rank, AI agents can reason over, and shoppers can buy from.</p>
+          <div class="hero-actions">
+            <a class="button primary" href="https://calendar.app.google/TA9Xv89TnJkJidm78" target="_blank" rel="noopener noreferrer">Talk to a founder</a>
+            <a class="button ghost" href="https://carve.ac/demo">Try Carve on a product</a>
+          </div>
+        </div>
+
+        <div class="product-stage" aria-label="Carve understanding real products">
+          <div class="product-canvas">
+            <div class="catalog-head">
+              <div class="catalog-brand"><img src="./carve-ecom-assets/shopify.svg" alt="">Live product</div>
+              <div class="catalog-view">Click a product</div>
+            </div>
+            <div class="featured-visual" id="featured-visual"><img id="featured-image" src="./carve-ecom-assets/patagonia-better-sweater-vest-cutout.png" alt="Front view of a sleeveless navy knit-fleece vest with a stand collar, full-length black zipper, vertical zip chest pocket, two zip hand pockets and a small Patagonia chest patch."></div>
+            <div class="product-rail" role="list" aria-label="Public product demonstrations">
+              <button class="commerce-product active" role="listitem" aria-label="Understand Patagonia Better Sweater Fleece Vest" data-product-key="patagonia"><span class="commerce-image"><img src="./carve-ecom-assets/patagonia-better-sweater-vest-cutout.png" alt=""><span class="commerce-select">✓</span></span></button>
+              <button class="commerce-product" role="listitem" aria-label="Understand Aesop Blue Chamomile Facial Hydrating Masque" data-product-key="aesop"><span class="commerce-image"><img src="./carve-ecom-assets/aesop-blue-chamomile-cutout.png" alt=""><span class="commerce-select">✓</span></span></button>
+              <button class="commerce-product" role="listitem" aria-label="Understand On Cloudmonster 2" data-product-key="on"><span class="commerce-image"><img src="./carve-ecom-assets/on-cloudmonster-2.webp" alt=""><span class="commerce-select">✓</span></span></button>
+            </div>
+            <div class="featured-meta">
+              <div class="featured-brand" id="featured-brand">Patagonia · Men’s fleece vest</div>
+              <h3 id="featured-name">Men’s Better Sweater® Fleece Vest</h3>
+              <div class="featured-meta-row"><span id="featured-variant">New Navy · Regular fit</span><span class="featured-proof" id="featured-proof">★ 4.8 · 516 reviews</span></div>
+            </div>
+          </div>
+          <div class="reason-stream" aria-live="polite">
+            <div class="stream-head">
+              <img src="./carve-ecom-assets/orb-64.png" alt="">
+              <div><small>Carve understands</small><strong id="stream-product">Patagonia Better Sweater® Fleece Vest</strong></div>
+              <span class="stream-status">Research checked</span>
+            </div>
+            <div class="reason-pipeline" role="tablist" aria-label="Explore Carve's reasoning stages">
+              <button class="reason-step active" data-stage="product">Product truth</button>
+              <button class="reason-step" data-stage="brand">Brand character</button>
+              <button class="reason-step" data-stage="buyer">Buyer feeling</button>
+              <button class="reason-step" data-stage="decision">Why they choose it</button>
+            </div>
+            <div class="stream-read">
+              <strong id="stream-stage-title">A layer designed to stay useful.</strong>
+              <p id="stream-insight">Warm recycled fleece, a quietly refined sweater-knit face, pack-friendly seams and secure storage make this an everyday layer—not a seasonal novelty.</p>
+              <div class="stream-facts" id="stream-facts"><span>100% recycled body fabric</span><span>394 g</span><span>3 secure pockets</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="channel-bar" aria-label="Three outcomes of better product data">
+      <div class="shell channel-inner">
+        <div class="channel-intro">
+          <h2>One product story.<br>Three places to win.</h2>
+          <p>The same product understanding should travel intact—from the first query to the final “add to bag.”</p>
+          <div class="channel-product"><img src="./carve-ecom-assets/patagonia-better-sweater-vest-cutout.png" alt="Front view of a navy sleeveless knit-fleece vest"><div><small>Source product</small><strong>Better Sweater® Fleece Vest</strong><span>19 sellable facts ready →</span></div></div>
+        </div>
+        <div class="channel-journey">
+          <article class="channel">
+            <div class="channel-head"><div class="channel-top"><span class="channel-label">Google search</span><span class="channel-state">Found</span></div><h3>Matches how shoppers look</h3></div>
+            <div class="serp-preview">
+              <div class="serp-url">patagonia.com › fleece › vests</div>
+              <div class="serp-title">Men’s Better Sweater® Recycled Fleece Vest</div>
+              <div class="serp-copy">An understated everyday layer in warm 100% recycled sweater-knit fleece, with pack-friendly seams and lower-impact dyeing.</div>
+              <div class="query-match"><span>recycled fleece vest</span><span>travel fleece vest</span><span>pack-friendly vest</span></div>
+              <div class="preview-foot"><span>Buyer language matched</span><strong>5 / 5</strong></div>
+            </div>
+          </article>
+          <article class="channel">
+            <div class="channel-head"><div class="channel-top"><span class="channel-label">AI shopping</span><span class="channel-state">Recommended</span></div><h3>Explains why this one</h3></div>
+            <div class="agent-preview">
+              <div class="agent-question">“I want one warm vest for hiking and business-casual travel.”</div>
+              <div class="agent-answer"><img src="./carve-ecom-assets/orb-32.png" alt=""><span>The Better Sweater is quietly versatile: warm 100% recycled fleece, a clean sweater-knit face and offset shoulder seams that stay comfortable under pack straps.</span></div>
+              <div class="answerable"><span>occasion</span><span>materials</span><span>comfort</span><span>brand fit</span></div>
+            </div>
+          </article>
+          <article class="channel">
+            <div class="channel-head"><div class="channel-top"><span class="channel-label">Product page</span><span class="channel-state">Chosen</span></div><h3>Closes the last doubt</h3></div>
+            <div class="pdp-preview">
+              <div class="pdp-product"><img src="./carve-ecom-assets/patagonia-better-sweater-vest-cutout.png" alt=""><div><small>Patagonia</small><strong>Better Sweater® Vest</strong><div class="pdp-rating">★★★★★ 4.8</div></div></div>
+              <div class="pdp-row">New Navy · Regular fit <span>In stock</span></div>
+              <div class="pdp-row">Recycled fleece · lower-impact dye <span>Answered</span></div>
+              <div class="pdp-add">Add to bag</div>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="understanding" id="understanding">
+      <div class="shell">
+        <div class="reveal">
+          <h2 class="serif section-title">Products sell when they’re understood.</h2>
+          <p class="section-lede">Carve first builds the working understanding a brilliant salesperson would want before opening their mouth: the product, the person, and the moment it becomes worth choosing.</p>
+        </div>
+
+        <div class="understanding-stage reveal">
+          <div class="understanding-photo">
+            <img src="./carve-ecom-assets/towel-stack.jpg" alt="Shelves of folded towels in warm neutral colors">
+            <div class="photo-caption">
+              <span class="kicker">Field Bath Towel · Demo</span>
+              <strong>The product, before the copy.</strong>
+            </div>
+          </div>
+          <div class="understanding-panel">
+            <div class="panel-head">
+              <div class="panel-brand"><img src="./carve-ecom-assets/orb-64.png" alt=""><span>Carve’s product read</span></div>
+              <span class="panel-state">Evidence checked</span>
+            </div>
+
+            <div class="understanding-tabs" role="tablist">
+              <button class="u-tab active" data-tab="product">1. Understands the product</button>
+              <button class="u-tab" data-tab="buyer">2. Understands the buyer</button>
+              <button class="u-tab" data-tab="why">3. Understands why they choose it</button>
+            </div>
+
+            <div class="u-content active" id="product">
+              <div class="answer-label">What it is</div>
+              <p class="answer-copy">A heavyweight cotton bath towel that turns an everyday bathroom into a quiet, considered ritual.</p>
+              <div class="reason-list">
+                <div class="reason-row"><small>Known facts</small><p>100% cotton · 700 GSM · 70 × 140 cm · machine washable · looped terry construction</p></div>
+                <div class="reason-row"><small>Distinctive</small><p>At 700 GSM, the weight becomes a feeling: substantial in the hand and enveloping after a shower.</p></div>
+                <div class="reason-row"><small>Merchant proof</small><p>Measured dry time and wash-tested softness would turn that desirable hand-feel into claims shoppers can trust.</p></div>
+              </div>
+            </div>
+
+            <div class="u-content" id="buyer">
+              <div class="answer-label">Who it’s for</div>
+              <p class="answer-copy">Someone upgrading a daily ritual. They want hotel-level substance at home, but still need the towel to work in an ordinary bathroom.</p>
+              <div class="reason-list">
+                <div class="reason-row"><small>The job</small><p>Turn a functional household object into a quiet, repeatable moment of comfort.</p></div>
+                <div class="reason-row"><small>Everyday fit</small><p>The best version brings that substance to an ordinary towel rail, washing cycle, and shared bathroom.</p></div>
+                <div class="reason-row"><small>The language</small><p>Buyers ask about “plush,” “heavyweight,” “stays soft,” and “dries properly”—not internal textile taxonomy.</p></div>
+              </div>
+            </div>
+
+            <div class="u-content" id="why">
+              <div class="answer-label">What decides the purchase</div>
+              <p class="answer-copy">The sale is won when “luxury” becomes concrete: how it feels, how much water it holds, and what happens after wash twenty.</p>
+              <div class="reason-list">
+                <div class="reason-row"><small>Decision 01</small><p>Density and hand-feel—substantial without becoming stiff or cumbersome.</p></div>
+                <div class="reason-row"><small>Decision 02</small><p>Absorbency versus drying time, especially in smaller or shared bathrooms.</p></div>
+                <div class="reason-row"><small>Decision 03</small><p>Full dimensions, care, shrinkage, and softness after repeat washing.</p></div>
+              </div>
+            </div>
+
+            <div class="evidence-foot">
+              <span><i></i>5 merchant facts</span>
+              <span><i></i>3 context sources</span>
+              <span><i></i>2 questions for the merchant</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="bridge" id="bridge">
+      <div class="shell">
+        <div class="reveal">
+          <h2 class="serif section-title">Understanding becomes product data.</h2>
+          <p class="section-lede">Carve learns what makes a product worth choosing, then carries that story into the page, search result, structured data and answers shoppers need.</p>
+        </div>
+
+        <div class="catalog-scroll" id="catalog-scroll">
+        <div class="commerce-studio catalog-transform reveal" id="catalog-transform" data-transform-phase="before">
+          <div class="studio-scaler">
+          <div class="studio-toolbar"><img src="./carve-ecom-assets/shopify.svg" alt=""><strong>Products / Better Sweater® Fleece Vest</strong><small>New Navy</small><div class="comparison-track" aria-label="Catalog transformation"><span class="active" data-compare-stage="before">Before</span><b>→</b><span data-compare-stage="work">Carve works</span><b>→</b><span data-compare-stage="after">After</span></div><span class="sync-state" id="catalog-phase-label">Catalog before · scroll</span><div class="catalog-progress"><span id="catalog-progress-fill"></span></div></div>
+          <div class="studio-grid">
+            <aside class="source-editor">
+              <div class="editor-head"><div><small><span class="before-pill">Before</span> Current Shopify record</small><strong>Before product understanding</strong></div><div class="editor-score"><b>38<span style="font-size:9px">/100</span></b><span>Readiness</span></div></div>
+              <div class="editor-fields">
+                <div class="editor-field"><label>Title <span>No brand</span></label><p>Better Sweater Fleece Vest – New Navy</p></div>
+                <div class="editor-field"><label>Description <span>Low fact density</span></label><p>Our go-to fleece vest for cool-weather layering. Made from recycled polyester with a sweater-knit face and soft fleece interior. Full-zip front, zippered pockets, and a clean finish that works as well in the office as on the trail. Fair Trade Certified sewn.</p></div>
+                <div class="editor-field"><label>SEO title <span>Defaults to title</span></label><p>Better Sweater Fleece Vest – New Navy</p></div>
+                <div class="editor-field"><label>SEO description <span>Auto-truncated</span></label><p>Our go-to fleece vest for cool-weather layering. Made from recycled polyester with a sweater-knit fac…</p></div>
+                <div class="editor-field"><label>Product type <span>Single level</span></label><p>Vests</p></div>
+                <div class="editor-field"><label>Material</label><p>Recycled Polyester</p></div>
+                <div class="editor-field"><label>Questions &amp; answers <span>Empty</span></label><div class="editor-empty">No buyer questions in the product record</div></div>
+              </div>
+            </aside>
+
+            <div class="output-studio">
+              <div class="output-tabs" role="tablist" aria-label="Patagonia Carve outputs">
+                <span class="output-side-label">After</span>
+                <button class="output-tab active" data-output-tab="pdp">Product page</button>
+                <button class="output-tab" data-output-tab="seo">SEO &amp; discovery</button>
+                <button class="output-tab" data-output-tab="attributes">Product data · 19</button>
+                <button class="output-tab" data-output-tab="qa">Buyer Q&amp;A · 6</button>
+              </div>
+
+              <div class="work-overlay" aria-label="How Carve understands this product">
+                <small>Carve builds the product model</small>
+                <h3>Carve establishes what is true, then decides what deserves the page.</h3>
+                <div class="work-stack">
+                  <div class="work-card"><span class="work-index">01</span><div><strong>Build the truth set</strong><p>Normalize the merchant record, current page, structured fields, verified exact-product research and what the image can genuinely prove.</p></div><em>Normalized</em></div>
+                  <div class="work-card"><span class="work-index">02</span><div><strong>Understand the decision</strong><p>Model what the product is, who buys it, what they weigh, what is distinctive, what they want to feel and how this brand should say it.</p></div><em>Understood</em></div>
+                  <div class="work-card"><span class="work-index">03</span><div><strong>Probe the buyer questions</strong><p>A shopping agent asks what this buyer needs to know, then marks each answer as stated, inferred, partial, variant-dependent or absent.</p></div><em>Tested</em></div>
+                  <div class="work-card"><span class="work-index">04</span><div><strong>Plan the finished page</strong><p>Choose the angle, hierarchy, sections and scenarios by buyer importance, brand voice and real page room, then write the fields.</p></div><em>Planned</em></div>
+                </div>
+              </div>
+
+              <div class="output-pane active" id="output-pdp">
+                <div class="pdp-output">
+                  <div class="pdp-gallery">
+                    <div class="pdp-gallery-main" id="pdp-gallery-main"><span class="pdp-media-index" id="pdp-media-index">1 / 3</span><img id="pdp-gallery-image" src="./carve-ecom-assets/patagonia-better-sweater-vest-cutout.png" alt="Front view of a sleeveless navy knit-fleece vest with a stand collar, full-length black zipper, vertical zip chest pocket, two zip hand pockets and a small Patagonia chest patch."></div>
+                    <div class="pdp-thumbs" aria-label="Product image gallery">
+                      <button type="button" class="pdp-thumb active" data-gallery-index="1" data-gallery-src="./carve-ecom-assets/patagonia-better-sweater-vest-cutout.png" data-gallery-alt="Front view of a sleeveless navy knit-fleece vest with a stand collar, full-length black zipper, vertical zip chest pocket, two zip hand pockets and a small Patagonia chest patch." data-gallery-photo="false" aria-label="Show product-only front view" aria-pressed="true"><img src="./carve-ecom-assets/patagonia-better-sweater-vest-cutout.png" alt=""></button>
+                      <button type="button" class="pdp-thumb" data-gallery-index="2" data-gallery-src="./carve-ecom-assets/patagonia-better-sweater-ai-front.png" data-gallery-alt="A blond man shown from the front wearing the New Navy fleece vest zipped over a cool-grey long-sleeve shirt with dark jeans. The raised collar, shoulder seams, vertical chest pocket and two hand pockets are visible." data-gallery-photo="true" aria-label="Show the vest worn from the front" aria-pressed="false"><img src="./carve-ecom-assets/patagonia-better-sweater-ai-front.png" alt=""></button>
+                      <button type="button" class="pdp-thumb" data-gallery-index="3" data-gallery-src="./carve-ecom-assets/patagonia-better-sweater-ai-back.png" data-gallery-alt="A blond man shown from behind wearing the New Navy fleece vest over a cool-grey long-sleeve shirt with dark jeans. The raised collar, clean sweater-knit back, offset shoulder seams and straight hip-length hem are visible." data-gallery-photo="true" aria-label="Show the vest worn from the back" aria-pressed="false"><img src="./carve-ecom-assets/patagonia-better-sweater-ai-back.png" alt=""></button>
+                    </div>
+                  </div>
+                  <div class="pdp-copy">
+                    <div class="pdp-copy-brand">Patagonia · Men’s fleece</div>
+                    <h3>Men’s Better Sweater® Fleece Vest</h3>
+                    <div class="pdp-review">★★★★★ <span>4.8 from 516 reviews</span></div>
+                    <div class="pdp-price"><strong>$129</strong></div>
+                    <div class="pdp-story">
+                      <p class="pdp-description">The Better Sweater® Vest earns the hook by the door. Its 10-oz recycled polyester fleece brings warmth to the core, while the sleeveless cut leaves the arms free and the full-length zip makes it easy to adjust on the move. The inside feels soft and familiar; the outside has a clean sweater-knit face. A regular fit leaves comfortable room for a tee, base layer or button-down and fits neatly beneath a shell.</p>
+                      <p class="pdp-description">With a pack on, the construction starts to matter. Offset shoulder seams sit away from the straps, flat seams reduce bulk and help prevent chafing, and brushed-tricot trim keeps the armholes and hem soft against the layers below. The zip-through stand collar adds coverage at the neck. Two zippered handwarmer pockets and a vertical chest pocket keep a phone, keys and small trail essentials secure.</p>
+                      <p class="pdp-description">The body fleece is 100% recycled polyester, dyed with a lower-impact heather process that uses less dyestuff, energy and water than conventional methods. The fabrics are bluesign® approved. The vest is made in a Fair Trade Certified™ factory, which means the people who made it earned a premium for their labor. Machine-washable care keeps things simple, and a sweater stone helps extend the useful life of the knit.</p>
+                      <p class="pdp-description">At 394 g, it brings useful warmth to a cold start and remains easy to carry through the rest of the day. Over a base layer, it takes the edge off at the trailhead. The full-length zip opens as the first miles warm up, and a shell fits over it when the weather turns. The pack comes off, but the vest can stay on; the sweater-knit face carries easily through the drive home or over a button-down the next morning. It is the kind of layer that spends more time in use than in the wardrobe.</p>
+                    </div>
+                    <ul class="pdp-key-details" aria-label="Key product details">
+                      <li class="pdp-key-detail">10-oz 100% recycled polyester fleece</li>
+                      <li class="pdp-key-detail">Regular fit · 394 g (13.9 oz)</li>
+                      <li class="pdp-key-detail">Pack-friendly shoulder seams</li>
+                      <li class="pdp-key-detail">Three secure zippered pockets</li>
+                      <li class="pdp-key-detail">Lower-impact heather dyeing</li>
+                      <li class="pdp-key-detail">Fair Trade Certified™ factory</li>
+                    </ul>
+                    <div class="pdp-purchase">
+                      <div class="pdp-option-head"><strong>Color: <span>New Navy</span></strong></div>
+                      <button type="button" class="pdp-color-option" aria-pressed="true"><i class="variant-swatch"></i><span>New Navy</span></button>
+                      <div class="pdp-option-head pdp-size-head"><strong>Size: <span id="pdp-selected-size">M · Medium</span></strong><span>Regular fit</span></div>
+                      <div class="pdp-size-options" aria-label="Select a size">
+                        <button type="button" class="pdp-size" data-size="XS" data-size-name="Extra Small" aria-pressed="false">XS</button>
+                        <button type="button" class="pdp-size" data-size="S" data-size-name="Small" aria-pressed="false">S</button>
+                        <button type="button" class="pdp-size active" data-size="M" data-size-name="Medium" aria-pressed="true">M</button>
+                        <button type="button" class="pdp-size" data-size="L" data-size-name="Large" aria-pressed="false">L</button>
+                        <button type="button" class="pdp-size" data-size="XL" data-size-name="Extra Large" aria-pressed="false">XL</button>
+                        <button type="button" class="pdp-size" data-size="XXL" data-size-name="2X Large" aria-pressed="false">XXL</button>
+                        <button type="button" class="pdp-size" data-size="3XL" data-size-name="3X Large" aria-pressed="false">3XL</button>
+                      </div>
+                      <button type="button" class="pdp-buy" id="pdp-add-to-cart" aria-live="polite">Add to cart</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="output-pane" id="output-seo">
+                <div class="full-output">
+                  <div class="output-title"><h3>Found with the language buyers use.</h3><span>4 discovery fields ready</span></div>
+                  <div class="search-preview-large" aria-label="Google search result preview">
+                    <div class="serp-search-shell">
+                      <div class="serp-search-input"><img src="./carve-ecom-assets/google.svg" alt=""><span>men’s recycled fleece vest</span><i>×</i><b>⌕</b></div>
+                      <div class="serp-search-nav"><span class="active">All</span><span>Shopping</span><span>Images</span><span>Videos</span><em>Tools</em></div>
+                    </div>
+                    <div class="serp-organic-result">
+                      <div class="serp-source-row"><span class="serp-favicon">P</span><div><b>Patagonia</b><small>https://www.patagonia.com › product › mens-better-sweater-fleece-vest</small></div></div>
+                      <strong>Men’s Better Sweater® Fleece Vest | Patagonia</strong>
+                      <p>Warm 100% recycled polyester fleece with a sweater-knit face, pack-friendly seams and three secure pockets. Regular fit in New Navy.</p>
+                      <div class="serp-rich-result"><strong>$129.00 · In stock</strong><span class="serp-rating">★★★★★ 4.8</span><span>516 reviews</span></div>
+                      <span class="serp-product-thumb"><img src="./carve-ecom-assets/patagonia-better-sweater-vest-cutout.png" alt=""></span>
+                    </div>
+                  </div>
+                  <div class="output-field-list">
+                    <div class="output-field-row"><label>SEO title</label><p>Men’s Better Sweater® Recycled Fleece Vest | Patagonia</p><em>Written</em></div>
+                    <div class="output-field-row"><label>Meta description</label><p>Patagonia Men’s Better Sweater Vest in New Navy. Warm 100% recycled sweater-knit fleece, regular fit, pack-friendly seams and lower-impact dyeing.</p><em>Written</em></div>
+                    <div class="output-field-row"><label>Product type</label><p>Apparel &amp; Accessories › Clothing › Outerwear › Vests</p><em>Mapped</em></div>
+                    <div class="output-field-row"><label>Image alt text</label><p>Front view of a sleeveless navy knit-fleece vest with a stand collar, full-length black zipper, vertical zip chest pocket, two zip hand pockets and a small Patagonia chest patch.</p><em>Written</em></div>
+                    <div class="output-field-row"><label>Search intent</label><p>recycled fleece vest · sustainable fleece vest · timeless men’s vest · fleece vest for travel · pack-friendly midlayer</p><em>Matched</em></div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="output-pane" id="output-attributes">
+                <div class="full-output">
+                  <div class="output-title"><h3>The full product, structured.</h3><span>19 attributes mapped</span></div>
+                  <div class="attribute-grid">
+                    <div class="attribute"><label>Style</label><strong>25882</strong></div><div class="attribute"><label>Color</label><strong>New Navy · NENA</strong></div>
+                    <div class="attribute"><label>Fit</label><strong>Regular</strong></div><div class="attribute"><label>Weight</label><strong>394 g · 13.9 oz</strong></div>
+                    <div class="attribute"><label>Body fabric</label><strong>10-oz 100% recycled polyester knit fleece</strong></div><div class="attribute"><label>Trim &amp; pocket bags</label><strong>5.3-oz recycled polyester brushed tricot</strong></div>
+                    <div class="attribute"><label>Closure</label><strong>Full-length zipper</strong></div><div class="attribute"><label>Collar</label><strong>Zip-through stand collar + zipper garage</strong></div>
+                    <div class="attribute"><label>Shoulders</label><strong>Offset seams for pack comfort</strong></div><div class="attribute"><label>Construction</label><strong>Flat seams reduce bulk and chafe</strong></div>
+                    <div class="attribute"><label>Hand pockets</label><strong>2 zippered welt pockets</strong></div><div class="attribute"><label>Chest pocket</label><strong>1 vertical zip security pocket</strong></div>
+                    <div class="attribute"><label>Comfort trim</label><strong>Brushed tricot at armholes and hem</strong></div><div class="attribute"><label>Dye process</label><strong>Lower-impact heather dyeing</strong></div>
+                    <div class="attribute"><label>Fabric approval</label><strong>bluesign® approved</strong></div><div class="attribute"><label>Factory</label><strong>Fair Trade Certified™</strong></div>
+                    <div class="attribute"><label>Origin</label><strong>Sri Lanka</strong></div><div class="attribute"><label>Care</label><strong>Wash warm · tumble dry low · no bleach or iron</strong></div>
+                    <div class="attribute"><label>Knit care</label><strong>Refresh with a sweater stone as needed</strong></div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="output-pane" id="output-qa">
+                <div class="full-output">
+                  <div class="output-title"><h3>Six reasons to feel sure.</h3><span>Buyer questions answered</span></div>
+                  <div class="qa-list">
+                    <div class="qa-item"><strong>What makes it feel distinctly Patagonia?</strong><p>Its value is quiet and functional: an understated sweater-knit face, pack-ready construction and environmental choices supported by specific material and factory standards.</p></div>
+                    <div class="qa-item"><strong>Is it comfortable with a backpack?</strong><p>Yes. Offset shoulder seams are designed for comfort under pack straps, and flat seams reduce bulk and chafe.</p></div>
+                    <div class="qa-item"><strong>How does it layer?</strong><p>The regular fit works comfortably over a tee, base layer or button-down, while the sleeveless cut keeps arms free.</p></div>
+                    <div class="qa-item"><strong>What can I carry securely?</strong><p>Two zip handwarmer pockets and one vertical zip chest pocket keep a phone, keys and small essentials close.</p></div>
+                    <div class="qa-item"><strong>What makes the materials more considered?</strong><p>The fleece and trim use 100% recycled polyester; the dye process reduces dyestuff, energy and water use, fabrics are bluesign® approved, and the vest is made in a Fair Trade Certified™ factory.</p></div>
+                    <div class="qa-item"><strong>How do I keep it looking good?</strong><p>Machine wash warm and tumble dry low. A sweater stone can refresh the knit’s surface and help extend its useful life.</p></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          </div>
+        </div>
+        </div>
+        <p class="bridge-note">Public-product-data demonstration, not a customer endorsement. Readiness scores, imported fields and Carve outputs are illustrative.</p>
+      </div>
+    </section>
+
+    <section class="demand" id="proof">
+      <div class="shell demand-grid">
+        <div class="reveal">
+          <h2 class="serif demand-title">Real numbers.<br>No theatre.</h2>
+          <p class="demand-copy">Connect Search Console and analytics. Carve reads the language shoppers actually use, the product questions your page leaves open, and what happens next—without pretending AI prompt volume is measurable.</p>
+          <div class="metric-receipts">
+            <div class="metric-receipt"><img src="./carve-ecom-assets/google.svg" alt="">Queries and landing pages from Google Search Console</div>
+            <div class="metric-receipt"><img src="./carve-ecom-assets/ga4.svg" alt="">Sessions, PDP behavior and conversions from analytics</div>
+            <div class="metric-receipt"><img src="./carve-ecom-assets/orb-32.png" alt="">Every number retains source, market and date range</div>
+          </div>
+        </div>
+        <div class="commerce-dashboard reveal">
+          <div class="dashboard-head">
+            <img src="./carve-ecom-assets/orb-64.png" alt="">
+            <div><strong>Demand explorer</strong><small>Example connected retailer · 8,420 active products</small></div>
+            <span class="date-filter">Last 90 days⌄</span>
+          </div>
+          <div class="dashboard-tabs" role="tablist" aria-label="Demand analytics views">
+            <button class="demand-tab active" data-demand-view="search">1&nbsp; Search visibility</button>
+            <button class="demand-tab" data-demand-view="ai">2&nbsp; AI shopping</button>
+            <button class="demand-tab" data-demand-view="pdp">3&nbsp; PDP conversion</button>
+          </div>
+          <div class="dashboard-body">
+            <div class="kpi-grid">
+              <div class="kpi"><label id="kpi-label-0">Product impressions</label><strong id="kpi-value-0">4.96M</strong><small id="kpi-delta-0">+12.6% vs prior period</small></div>
+              <div class="kpi"><label id="kpi-label-1">Organic PDP clicks</label><strong id="kpi-value-1">178.6K</strong><small id="kpi-delta-1">+9.8% vs prior period</small></div>
+              <div class="kpi"><label id="kpi-label-2">Product CTR</label><strong id="kpi-value-2">3.6%</strong><small id="kpi-delta-2">+0.2 pp</small></div>
+              <div class="kpi"><label id="kpi-label-3">Organic product revenue</label><strong id="kpi-value-3">$1.08M</strong><small id="kpi-delta-3">+14.1% vs prior period</small></div>
+            </div>
+            <div class="analytics-grid">
+              <div class="chart-card">
+                <div class="chart-head"><strong id="chart-title">Product impressions</strong><span id="chart-source">Google Search Console</span></div>
+                <div class="chart-wrap">
+                  <svg viewBox="0 0 420 120" role="img" aria-label="Illustrative analytics trend">
+                    <defs><linearGradient id="chartGradient" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#8B4A2C" stop-opacity=".32"/><stop offset="1" stop-color="#8B4A2C" stop-opacity="0"/></linearGradient></defs>
+                    <path id="chart-area" class="chart-area" d="M0 104 L0 92 L35 88 L70 91 L105 76 L140 78 L175 61 L210 67 L245 48 L280 56 L315 34 L350 41 L385 22 L420 28 L420 104 Z"></path>
+                    <path id="chart-line" class="chart-path" d="M0 92 L35 88 L70 91 L105 76 L140 78 L175 61 L210 67 L245 48 L280 56 L315 34 L350 41 L385 22 L420 28"></path>
+                    <circle class="chart-dot" cx="420" cy="28" r="4"></circle>
+                  </svg>
+                  <div class="chart-tooltip"><b id="chart-tooltip-value">4.96M</b><span id="chart-tooltip-label">90-day product impressions</span></div>
+                </div>
+              </div>
+              <div class="query-card">
+                <div class="query-head"><strong id="table-title">High-intent query clusters</strong><span id="table-source">GSC</span></div>
+                <table class="query-table"><tbody id="demand-table">
+                  <tr><td>waterproof hiking jacket women</td><td>82.6K imp. · 1.8% CTR</td></tr>
+                  <tr><td>merino wool sweater men</td><td>54.8K imp. · 2.1% CTR</td></tr>
+                  <tr><td>washable wool throw blanket</td><td>31.9K imp. · 1.5% CTR</td></tr>
+                  <tr><td>carry on suitcase replaceable wheels</td><td>22.1K imp. · 4.6% CTR</td></tr>
+                </tbody></table>
+              </div>
+            </div>
+            <div class="data-action"><img src="./carve-ecom-assets/orb-32.png" alt=""><div><strong id="action-title">High-intent opportunity</strong><p id="action-copy">1,184 products already rank on pages one and two for valuable queries. Strengthen material, fit and feature fields where impressions are high but CTR trails the category.</p></div><span>→</span></div>
+          </div>
+          <div class="dashboard-foot"><img src="./carve-ecom-assets/orb-32.png" alt=""><span>Illustrative connected-store view. Production values come from the retailer’s own Search Console and analytics connections.</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="products" id="examples">
+      <div class="shell">
+        <div class="products-intro reveal">
+          <div>
+            <h2 class="serif section-title">A product is also a point of view.</h2>
+          </div>
+          <p class="section-lede">Material facts become commerce when Carve reads them through the brand, the buyer and the life the product belongs in.</p>
+        </div>
+
+        <div class="story-scroll">
+          <aside class="story-sticky reveal" aria-live="polite">
+            <div class="story-appbar"><img src="./carve-ecom-assets/shopify.svg" alt=""><strong>Product understanding</strong><span>Live model</span></div>
+            <div class="story-media contain" id="story-media">
+              <img id="story-image" src="./carve-ecom-assets/aesop-blue-chamomile-cutout.png" alt="Upright white crinkled skincare tube with black Aesop lettering, dense black-and-white label copy and a wide black flip cap.">
+              <span class="media-count" id="story-count">01 / 03</span>
+            </div>
+            <div class="story-pdp">
+              <div class="story-brand" id="story-brand">Aesop · Skin care</div>
+              <h3 id="story-name">Blue Chamomile Facial Hydrating Masque</h3>
+              <div class="story-variant" id="story-tags"><span>60 mL</span><span>Dry / dehydrated skin</span><span>Weekly use</span></div>
+              <div class="model-table">
+                <div class="model-row"><label>Product</label><p id="story-product-read">A discreet, transparent gel masque that can travel from takeoff to morning.</p><span>Checked</span></div>
+                <div class="model-row"><label>Brand</label><p id="story-brand-read">Precise, sensory and discreet—Aesop makes the ritual feel considered.</p><span>Learned</span></div>
+                <div class="model-row"><label>Buyer</label><p id="story-buyer-read">Someone who wants to arrive feeling like themselves after hours of cabin air.</p><span>Mapped</span></div>
+                <div class="model-row"><label>Decision</label><p id="story-decision-read">Serious hydration wins when it becomes an easy, private travel ritual.</p><span>Modeled</span></div>
+              </div>
+            </div>
+          </aside>
+
+          <div class="story-steps">
+            <article class="scroll-step active" data-story-key="aesop">
+              <div class="step-number">01</div>
+              <div class="step-product">Aesop · Blue Chamomile Facial Hydrating Masque</div>
+              <h3>Land looking like you slept.</h3>
+              <div class="step-insights">
+                <div class="step-insight"><strong>Product</strong><p>A lightweight, transparent gel masque that refreshes dry or travel-worn skin for 30 minutes or overnight, with niacinamide, sodium carrageenan and bisabolol.</p></div>
+                <div class="step-insight"><strong>Brand</strong><p>Aesop’s restraint is part of the experience. Exact usage, an aqueous texture and fresh herbaceous-floral aroma make the ritual feel intelligent, sensory and private.</p></div>
+                <div class="step-insight"><strong>Buyer</strong><p>They know the tight, tired feeling recycled cabin air leaves behind. They want to arrive feeling human without performing a conspicuous skincare ritual in seat 24A.</p></div>
+                <div class="step-insight"><strong>Why this one</strong><p>The flight is the use case, not a footnote. A dewy transparent finish and flexible wear time make meaningful hydration easy to use while travelling.</p></div>
+              </div>
+              <a class="story-source" href="https://www.aesop.com/uk/p/skin/treat-masque/blue-chamomile-facial-hydrating-masque/" target="_blank" rel="noreferrer">Official product source · public demo</a>
+            </article>
+
+            <article class="scroll-step" data-story-key="muuto">
+              <div class="step-number">02</div>
+              <div class="step-product">Muuto · Outline Sofa 3-Seater</div>
+              <h3>A quiet outline. A generous seat.</h3>
+              <div class="step-insights">
+                <div class="step-insight"><strong>Product</strong><p>The 220 cm Outline 3-Seater pairs a slim architectural exterior with a deep 62 cm seat and cold-foam cushioning. Refine Leather in Cognac wraps a wood-and-steel construction, lifted on slender black powder-coated aluminum legs.</p></div>
+                <div class="step-insight"><strong>Brand</strong><p>Muuto reworks the clean logic of 1960s Scandinavian sofas through proportion rather than decoration. Curved armrests and overlapping forms hold a calm outline, while the leather develops patina and character with time.</p></div>
+                <div class="step-insight"><strong>Buyer</strong><p>Someone furnishing a considered living room who wants a serious place to lounge without letting the sofa dominate it. They care about the room around the piece as much as the comfort inside it, and want leather that becomes more personal with use.</p></div>
+                <div class="step-insight"><strong>Why this one</strong><p>The decision is the balance: a deep, soft seat inside a precise, visually light exterior. At 220 × 84 cm, the footprint is clear before delivery, while the 62 cm seat depth makes the lounge comfort tangible.</p></div>
+              </div>
+              <a class="story-source" href="https://www.muuto.com/product/Outline-Sofa-3-Seater-p9413/p9413/?configure=true" target="_blank" rel="noreferrer">Official product source · public demo</a>
+            </article>
+
+            <article class="scroll-step" data-story-key="on">
+              <div class="step-number">03</div>
+              <div class="step-product">On · Cloudmonster 2</div>
+              <h3>Find your rhythm—and keep it.</h3>
+              <div class="step-insights">
+                <div class="step-insight"><strong>Product</strong><p>A 300 g road-running shoe with max cushioning, a 6 mm drop, dual-density Helion™ superfoam and a nylon-blend Speedboard®.</p></div>
+                <div class="step-insight"><strong>Brand</strong><p>On makes the engineering visible and energetic. Oversized CloudTec® geometry and the playful Cloudmonster name promise a ride with personality.</p></div>
+                <div class="step-insight"><strong>Buyer</strong><p>They have real miles on the calendar but hate when a protective shoe feels flat. They want soft landings for the long run and enough life to lift the pace when the body says go.</p></div>
+                <div class="step-insight"><strong>Why this one</strong><p>The biggest CloudTec® softens impact while the rocker, dual-density Helion™ and Speedboard® keep the transition rhythmic and forward-rolling.</p></div>
+              </div>
+              <a class="story-source" href="https://www.on.com/en-se/products/cloudmonster-2-m-3me1012/mens/black-black-shoes-3ME10121043" target="_blank" rel="noreferrer">Official product source · public demo</a>
+            </article>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="evidence">
+      <div class="shell evidence-grid">
+        <div class="reveal">
+          <h2 class="serif section-title" style="font-size:clamp(42px,4.6vw,64px)">Carve knows the difference between insight and fact.</h2>
+          <p class="section-lede">Buyer context helps decide what matters. It never becomes permission to invent a product claim.</p>
+          <blockquote class="evidence-quote">If the answer only the merchant can know is missing, Carve asks. It does not fill the silence with confidence.</blockquote>
+        </div>
+        <div class="evidence-list reveal">
+          <div class="evidence-item"><span class="evidence-num">01</span><div><strong>Merchant product data</strong><small>Titles, descriptions, variants, specs, Q&A</small></div><span class="evidence-role">Factual authority</span></div>
+          <div class="evidence-item"><span class="evidence-num">02</span><div><strong>Storefront content</strong><small>Custom Shopify fields and the actual PDP structure</small></div><span class="evidence-role">Factual authority</span></div>
+          <div class="evidence-item"><span class="evidence-num">03</span><div><strong>Product imagery</strong><small>What is genuinely visible—not hidden specifications</small></div><span class="evidence-role">Visual evidence</span></div>
+          <div class="evidence-item"><span class="evidence-num">04</span><div><strong>Verified product research</strong><small>Exact-product sources with receipts and scope</small></div><span class="evidence-role">Optional evidence</span></div>
+          <div class="evidence-item"><span class="evidence-num">05</span><div><strong>Search and buyer language</strong><small>GSC queries calibrate vocabulary, never product facts</small></div><span class="evidence-role">Demand context</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="final" id="audit">
+      <div class="shell final-inner">
+        <div class="final-grid">
+          <div class="final-copy">
+            <h2 class="serif">Make every product easy to find, understand, and choose.</h2>
+            <p>Connect your Shopify store. Carve finds the product stories hiding in your catalog, then turns them into product data shoppers and every discovery channel can believe in.</p>
+            <div class="final-actions">
+              <a class="button primary" href="https://calendar.app.google/TA9Xv89TnJkJidm78" target="_blank" rel="noopener noreferrer">Talk to a founder</a>
+              <a class="button ghost" href="https://carve.ac/demo">Try Carve on a product</a>
+            </div>
+          </div>
+          <div class="final-products" aria-label="Example products understood by Carve">
+            <article class="audit-product-card"><div class="audit-product-image"><img src="./carve-ecom-assets/aesop-blue-chamomile-cutout.png" alt="Upright white crinkled skincare tube with black Aesop lettering, dense black-and-white label copy and a wide black flip cap."></div><div class="audit-product-copy"><small>Aesop · Skincare</small><strong>Blue Chamomile Hydrating Masque</strong><div class="audit-product-opportunity"><span>Story ready</span><b>Travel ritual clarified</b></div></div></article>
+            <article class="audit-product-card"><div class="audit-product-image"><img src="./carve-ecom-assets/on-cloudmonster-2.webp" alt="On Cloudmonster 2 running shoe"></div><div class="audit-product-copy"><small>On · Running</small><strong>Cloudmonster 2</strong><div class="audit-product-opportunity"><span>Story ready</span><b>Ride feel expressed</b></div></div></article>
+            <article class="audit-product-card"><div class="audit-product-image"><img src="./carve-ecom-assets/muuto-outline-sofa-cognac-cutout-wide.png" alt="Front three-quarter view of a cognac leather three-seat sofa with slim rectangular arms, two loose back cushions, two seat cushions and slender black metal legs."></div><div class="audit-product-copy"><small>Muuto · Furniture</small><strong>Outline Sofa 3-Seater</strong><div class="audit-product-opportunity"><span>Story ready</span><b>Comfort and proportion aligned</b></div></div></article>
+          </div>
+        </div>
+
+        <footer class="site-footer">
+          <div class="footer-grid">
+            <div class="footer-brand">
+              <a href="https://carve.ac/" aria-label="Carve home"><img class="brand-lockup" src="./carve-ecom-assets/lockup-white.svg" alt="Carve"></a>
+              <div class="footer-brand-copy">Product data that helps Shopify brands get found, understood and chosen.</div>
+              <a class="footer-social" href="https://www.linkedin.com/company/carve-ai/" target="_blank" rel="noopener noreferrer" aria-label="Carve on LinkedIn"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-4 0v7h-4v-7a6 6 0 0 1 6-6Z"/><rect width="4" height="12" x="2" y="9"/><circle cx="4" cy="4" r="2"/></svg></a>
+            </div>
+            <div>
+              <div class="footer-column-title">Product</div>
+              <div class="footer-column-links"><a href="./carve-how-it-works.html">How it works</a><a href="https://carve.ac/pricing">Pricing</a></div>
+            </div>
+            <div>
+              <div class="footer-column-title">Start</div>
+              <div class="footer-column-links"><a href="https://calendar.app.google/TA9Xv89TnJkJidm78" target="_blank" rel="noopener noreferrer">Talk to a founder</a><a href="https://carve.ac/demo">Try Carve on a product</a><a href="https://carve.ac/login">Log in</a></div>
+            </div>
+            <div>
+              <div class="footer-column-title">Company</div>
+              <div class="footer-column-links"><a href="https://carve.ac/insights">Insights</a><a href="mailto:william@carve.ac">william@carve.ac</a></div>
+            </div>
+          </div>
+          <div class="footer-bottom"><span>© 2026 Carve · Carve Labs AB</span><div class="footer-legal"><a href="https://carve.ac/privacy">Privacy</a><a href="https://carve.ac/terms">Terms</a></div></div>
+        </footer>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const productResearch = {
+      patagonia: {
+        name: 'Patagonia Better Sweater® Fleece Vest',
+        image: './carve-ecom-assets/patagonia-better-sweater-vest-cutout.png',
+        alt: 'Front view of a sleeveless navy knit-fleece vest with a stand collar, full-length black zipper, vertical zip chest pocket, two zip hand pockets and a small Patagonia chest patch.',
+        brand: 'Patagonia · Men’s fleece vest',
+        title: 'Men’s Better Sweater® Fleece Vest',
+        variant: 'New Navy · Regular fit',
+        proof: '★ 4.8 · 516 reviews',
+        stages: {
+          product: { title: 'A layer designed to stay useful.', text: 'Warm recycled fleece, a quietly refined sweater-knit face, pack-friendly seams and secure storage make this an everyday layer built for many seasons.', facts: ['100% recycled body fabric', '394 g', '3 secure pockets'] },
+          brand: { title: 'Patagonia makes restraint feel valuable.', text: 'The design stays quiet and practical. Credibility comes from lower-impact materials, a Fair Trade Certified™ factory, easy care and construction made for repeat wear.', facts: ['Lower-impact dyeing', 'bluesign® approved', 'Fair Trade Certified™'] },
+          buyer: { title: 'They would rather own the right layer than another layer.', text: 'They buy fewer, better things. They want to feel prepared for a cold trailhead, a travel day or a casual meeting without looking over-equipped or overly styled.', facts: ['Fewer, better layers', 'Quietly capable', 'Trail → travel → weekday'] },
+          decision: { title: 'The layer has to earn its place.', text: 'Timeless shape, warm fleece, pack comfort and environmental proof make its versatility believable. It feels considered precisely because nothing about it tries too hard.', facts: ['Understated by design', '4.8 from 516 reviews', 'Care extends the rotation'] }
+        }
+      },
+      aesop: {
+        name: 'Aesop Blue Chamomile Facial Hydrating Masque',
+        image: './carve-ecom-assets/aesop-blue-chamomile-cutout.png',
+        alt: 'Upright white crinkled skincare tube with black Aesop lettering, dense black-and-white label copy and a wide black flip cap.',
+        brand: 'Aesop · Skin care',
+        title: 'Blue Chamomile Facial Hydrating Masque',
+        variant: '60 mL · Once or twice weekly',
+        proof: 'Long-haul companion',
+        stages: {
+          product: { title: 'Hydration no one else has to see.', text: 'A lightweight aqueous gel masque that refreshes dry, travel-worn skin for 30 minutes or overnight, then leaves a transparent, dewy finish.', facts: ['Transparent finish', '30 min → overnight', '60 mL'] },
+          brand: { title: 'Aesop turns efficacy into a private ritual.', text: 'A fresh herbaceous-floral aroma, elegant gel texture, measured instructions and a transparent finish make the product feel precise, sensory and discreet.', facts: ['Measured usage', 'Sensory detail', 'Quietly distinctive'] },
+          buyer: { title: 'They want to arrive feeling like themselves.', text: 'They know the tight, tired feeling cabin air leaves behind. They want real replenishment without a visible sheet mask or a ten-step ritual in an airplane bathroom.', facts: ['Dry, tired skin', 'Frequent travellers', 'Private little ritual'] },
+          decision: { title: 'Discretion is part of the luxury.', text: 'Flexible wear time, a transparent finish and an in-flight use case turn serious hydration into an elegant ritual they can actually live with.', facts: ['Niacinamide + bisabolol', 'One teaspoon', 'Long-haul use'] }
+        }
+      },
+      on: {
+        name: 'On Cloudmonster 2',
+        image: './carve-ecom-assets/on-cloudmonster-2.webp',
+        alt: 'On Cloudmonster 2 road-running shoe in black',
+        brand: 'On · Road running',
+        title: 'Cloudmonster 2',
+        variant: 'Black / Black · 300 g',
+        proof: 'Training + uptempo',
+        stages: {
+          product: { title: 'Big protection. Still wants to move.', text: 'On’s biggest CloudTec® pairs softer landings with a forefoot rocker and Speedboard® that keeps a max-cushioned shoe rolling forward.', facts: ['Max CloudTec®', '6 mm drop', 'Forward-rolling ride'] },
+          brand: { title: 'On makes the engineering visible—and energetic.', text: 'The oversized CloudTec® silhouette and playful Cloudmonster name turn technical performance into something optimistic. The shoe should look as alive as the ride feels.', facts: ['Visible technology', 'Swiss engineering', 'Playful performance'] },
+          buyer: { title: 'For the runner who hates choosing between easy and alive.', text: 'They have real miles to cover, but a recovery shoe that feels flat drains the joy out of them. They want protection for the long run and enough rhythm to lift the pace when the body says go.', facts: ['Miles on the calendar', 'Protection, not mush', 'Easy → uptempo'] },
+          decision: { title: 'The feeling is the feature.', text: 'Dual-density Helion™ softens the landing; the nylon-blend Speedboard® and forefoot rocker turn that protection into a rhythmic, predictable transition.', facts: ['Dual-density bounce', 'Rhythmic daily miles', 'Easy → uptempo'] }
+        }
+      }
+    };
+
+    const commerceProducts = [...document.querySelectorAll('.commerce-product')];
+    const reasonSteps = [...document.querySelectorAll('.reason-step')];
+    const streamProduct = document.getElementById('stream-product');
+    const streamStageTitle = document.getElementById('stream-stage-title');
+    const streamInsight = document.getElementById('stream-insight');
+    const streamFacts = document.getElementById('stream-facts');
+    const featuredVisual = document.getElementById('featured-visual');
+    const featuredImage = document.getElementById('featured-image');
+    const featuredBrand = document.getElementById('featured-brand');
+    const featuredName = document.getElementById('featured-name');
+    const featuredVariant = document.getElementById('featured-variant');
+    const featuredProof = document.getElementById('featured-proof');
+    let activeProduct = 0;
+    let activeStage = 'product';
+    let productTimer;
+    let productResumeTimer;
+    let featuredSwapTimer;
+    let heroIsVisible = true;
+    const stageOrder = ['product', 'brand', 'buyer', 'decision'];
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    function renderFeaturedProduct(product) {
+      featuredVisual.classList.add('swapping');
+      clearTimeout(featuredSwapTimer);
+      featuredSwapTimer = setTimeout(() => {
+        featuredImage.src = product.image;
+        featuredImage.alt = product.alt;
+        featuredBrand.textContent = product.brand;
+        featuredName.textContent = product.title;
+        featuredVariant.textContent = product.variant;
+        featuredProof.textContent = product.proof;
+        requestAnimationFrame(() => featuredVisual.classList.remove('swapping'));
+      }, 120);
+    }
+
+    function renderReasoning() {
+      const key = commerceProducts[activeProduct].dataset.productKey;
+      const product = productResearch[key];
+      const stage = product.stages[activeStage];
+      streamProduct.textContent = product.name;
+      streamStageTitle.textContent = stage.title;
+      streamInsight.textContent = stage.text;
+      streamFacts.innerHTML = stage.facts.map(fact => `<span>${fact}</span>`).join('');
+      reasonSteps.forEach(step => {
+        const selected = step.dataset.stage === activeStage;
+        step.classList.toggle('active', selected);
+        step.setAttribute('aria-selected', String(selected));
+      });
+    }
+
+    function selectCommerceProduct(index) {
+      activeProduct = index;
+      commerceProducts.forEach((product, productIndex) => {
+        const selected = productIndex === index;
+        product.classList.toggle('active', selected);
+        product.setAttribute('aria-pressed', String(selected));
+      });
+      renderFeaturedProduct(productResearch[commerceProducts[index].dataset.productKey]);
+      renderReasoning();
+    }
+
+    function advanceHeroStory() {
+      const stageIndex = stageOrder.indexOf(activeStage);
+      if (stageIndex < stageOrder.length - 1) {
+        activeStage = stageOrder[stageIndex + 1];
+        renderReasoning();
+        return;
+      }
+      activeStage = 'product';
+      selectCommerceProduct((activeProduct + 1) % commerceProducts.length);
+    }
+
+    function startHeroStory() {
+      clearInterval(productTimer);
+      if (reduceMotion || !heroIsVisible) return;
+      productTimer = setInterval(advanceHeroStory, 3800);
+    }
+
+    function pauseHeroStory() {
+      clearInterval(productTimer);
+      clearTimeout(productResumeTimer);
+      if (!reduceMotion) productResumeTimer = setTimeout(startHeroStory, 14000);
+    }
+
+    commerceProducts.forEach((product, index) => product.addEventListener('click', () => {
+      activeStage = 'product';
+      selectCommerceProduct(index);
+      pauseHeroStory();
+    }));
+    reasonSteps.forEach(step => step.addEventListener('click', () => {
+      activeStage = step.dataset.stage;
+      renderReasoning();
+      pauseHeroStory();
+    }));
+    if (!reduceMotion) {
+      const heroObserver = new IntersectionObserver(([entry]) => {
+        heroIsVisible = entry.isIntersecting;
+        if (heroIsVisible) startHeroStory();
+        else clearInterval(productTimer);
+      }, { threshold:.22 });
+      heroObserver.observe(document.querySelector('.hero'));
+      startHeroStory();
+    }
+
+    const tabs = document.querySelectorAll('.u-tab');
+    const contents = document.querySelectorAll('.u-content');
+    tabs.forEach(tab => tab.addEventListener('click', () => {
+      tabs.forEach(t => t.classList.remove('active'));
+      contents.forEach(c => c.classList.remove('active'));
+      tab.classList.add('active');
+      document.getElementById(tab.dataset.tab).classList.add('active');
+    }));
+
+    const outputTabs = [...document.querySelectorAll('.output-tab')];
+    const outputPanes = [...document.querySelectorAll('.output-pane')];
+    function selectOutput(key) {
+      outputTabs.forEach(candidate => {
+        const selected = candidate.dataset.outputTab === key;
+        candidate.classList.toggle('active', selected);
+        candidate.setAttribute('aria-selected', String(selected));
+      });
+      outputPanes.forEach(pane => pane.classList.remove('active'));
+      document.getElementById(`output-${key}`).classList.add('active');
+    }
+    outputTabs.forEach(tab => tab.addEventListener('click', () => selectOutput(tab.dataset.outputTab)));
+
+    const pdpGalleryMain = document.getElementById('pdp-gallery-main');
+    const pdpGalleryImage = document.getElementById('pdp-gallery-image');
+    const pdpMediaIndex = document.getElementById('pdp-media-index');
+    const pdpThumbs = [...document.querySelectorAll('.pdp-thumb[data-gallery-src]')];
+    let pdpGalleryTimer;
+    function selectPdpImage(thumb) {
+      if (thumb.classList.contains('active')) return;
+      pdpGalleryMain.classList.add('changing');
+      clearTimeout(pdpGalleryTimer);
+      pdpGalleryTimer = setTimeout(() => {
+        pdpGalleryImage.src = thumb.dataset.gallerySrc;
+        pdpGalleryImage.alt = thumb.dataset.galleryAlt;
+        pdpMediaIndex.textContent = `${thumb.dataset.galleryIndex} / ${pdpThumbs.length}`;
+        pdpGalleryMain.classList.toggle('photo-view', thumb.dataset.galleryPhoto === 'true');
+        pdpThumbs.forEach(candidate => {
+          const selected = candidate === thumb;
+          candidate.classList.toggle('active', selected);
+          candidate.setAttribute('aria-pressed', String(selected));
+        });
+        requestAnimationFrame(() => pdpGalleryMain.classList.remove('changing'));
+      }, 140);
+    }
+    pdpThumbs.forEach(thumb => thumb.addEventListener('click', () => selectPdpImage(thumb)));
+
+    const pdpSizeButtons = [...document.querySelectorAll('.pdp-size')];
+    const pdpSelectedSize = document.getElementById('pdp-selected-size');
+    const pdpAddToCart = document.getElementById('pdp-add-to-cart');
+    let pdpCartTimer;
+    pdpSizeButtons.forEach(sizeButton => sizeButton.addEventListener('click', () => {
+      pdpSizeButtons.forEach(candidate => {
+        const selected = candidate === sizeButton;
+        candidate.classList.toggle('active', selected);
+        candidate.setAttribute('aria-pressed', String(selected));
+      });
+      pdpSelectedSize.textContent = `${sizeButton.dataset.size} · ${sizeButton.dataset.sizeName}`;
+      clearTimeout(pdpCartTimer);
+      pdpAddToCart.classList.remove('added');
+      pdpAddToCart.textContent = 'Add to cart';
+    }));
+    pdpAddToCart.addEventListener('click', () => {
+      const selected = document.querySelector('.pdp-size.active')?.dataset.size || '';
+      pdpAddToCart.textContent = selected ? `Added · Size ${selected}` : 'Added to cart';
+      pdpAddToCart.classList.add('added');
+      clearTimeout(pdpCartTimer);
+      pdpCartTimer = setTimeout(() => {
+        pdpAddToCart.textContent = 'Add to cart';
+        pdpAddToCart.classList.remove('added');
+      }, 1800);
+    });
+
+    const catalogScroll = document.getElementById('catalog-scroll');
+    const catalogTransform = document.getElementById('catalog-transform');
+    const catalogPhaseLabel = document.getElementById('catalog-phase-label');
+    const catalogProgressFill = document.getElementById('catalog-progress-fill');
+    const comparisonSteps = [...document.querySelectorAll('[data-compare-stage]')];
+    const catalogPhases = [
+      { phase:'before', output:'pdp', label:'Catalog before · keep scrolling' },
+      { phase:'work', output:'pdp', label:'Carve is understanding the product' },
+      { phase:'pdp', output:'pdp', label:'Product page enriched' },
+      { phase:'seo', output:'seo', label:'SEO & discovery enriched' },
+      { phase:'attributes', output:'attributes', label:'19 product attributes mapped' },
+      { phase:'qa', output:'qa', label:'6 buyer questions answered' }
+    ];
+    let activeCatalogPhase = -1;
+    let catalogScrollQueued = false;
+
+    function setCatalogPhase(index) {
+      if (activeCatalogPhase === index) return;
+      activeCatalogPhase = index;
+      const next = catalogPhases[index];
+      catalogTransform.dataset.transformPhase = next.phase;
+      catalogPhaseLabel.textContent = next.label;
+      catalogProgressFill.style.width = `${((index + 1) / catalogPhases.length) * 100}%`;
+      const comparisonStage = index === 0 ? 'before' : index === 1 ? 'work' : 'after';
+      comparisonSteps.forEach(step => step.classList.toggle('active', step.dataset.compareStage === comparisonStage));
+      selectOutput(next.output);
+    }
+
+    function syncCatalogToScroll() {
+      catalogScrollQueued = false;
+      if (window.innerWidth <= 980) {
+        catalogTransform.dataset.transformPhase = 'pdp';
+        catalogPhaseLabel.textContent = 'Carve output ready';
+        catalogProgressFill.style.width = '100%';
+        comparisonSteps.forEach(step => step.classList.toggle('active', step.dataset.compareStage === 'after'));
+        selectOutput('pdp');
+        return;
+      }
+      const rect = catalogScroll.getBoundingClientRect();
+      const travel = Math.max(1, catalogScroll.offsetHeight - window.innerHeight);
+      const progress = Math.max(0, Math.min(1, (78 - rect.top) / travel));
+      setCatalogPhase(Math.min(catalogPhases.length - 1, Math.floor(progress * catalogPhases.length)));
+    }
+
+    function queueCatalogSync() {
+      if (catalogScrollQueued) return;
+      catalogScrollQueued = true;
+      requestAnimationFrame(syncCatalogToScroll);
+    }
+    window.addEventListener('scroll', queueCatalogSync, { passive:true });
+    window.addEventListener('resize', queueCatalogSync);
+    syncCatalogToScroll();
+
+    const demandViews = {
+      search: {
+        metrics: [['Product impressions','4.96M','+12.6% vs prior period'],['Organic PDP clicks','178.6K','+9.8% vs prior period'],['Product CTR','3.6%','+0.2 pp'],['Organic product revenue','$1.08M','+14.1% vs prior period']],
+        chartTitle: 'Product impressions', source: 'Google Search Console', tooltip: ['4.96M','90-day product impressions'],
+        line: 'M0 92 L35 88 L70 91 L105 76 L140 78 L175 61 L210 67 L245 48 L280 56 L315 34 L350 41 L385 22 L420 28', y: 28,
+        tableTitle: 'High-intent query clusters', tableSource: 'GSC', rows: [['waterproof hiking jacket women','82.6K imp. · 1.8% CTR'],['merino wool sweater men','54.8K imp. · 2.1% CTR'],['washable wool throw blanket','31.9K imp. · 1.5% CTR'],['carry on suitcase replaceable wheels','22.1K imp. · 4.6% CTR']],
+        action: ['High-intent opportunity','1,184 products already rank on pages one and two for valuable queries. Strengthen material, fit and feature fields where impressions are high but CTR trails the category.']
+      },
+      ai: {
+        metrics: [['Known AI referral sessions','5,480','+42% vs prior period'],['Product-page views','10.2K','1.86 per session'],['Add-to-cart rate','9.7%','+1.3 pp vs site'],['Tracked revenue','$58.7K','90-day last click']],
+        chartTitle: 'Known AI referral sessions', source: 'Analytics · referral domains', tooltip: ['5,480','90-day known referrals'],
+        line: 'M0 102 L35 98 L70 95 L105 97 L140 82 L175 86 L210 68 L245 72 L280 61 L315 49 L350 54 L385 36 L420 38', y: 38,
+        tableTitle: 'Known AI referrers', tableSource: 'Analytics', rows: [['chatgpt.com','2,826 sessions · $31.7K'],['perplexity.ai','1,277 sessions · $13.6K'],['gemini.google.com','891 sessions · $8.8K'],['copilot.microsoft.com','486 sessions · $4.6K']],
+        action: ['Agent-ready opportunity','1,568 products received known AI referral traffic. Prioritize materials, dimensions, fit and compatibility on the 579 pages with the highest assisted revenue.']
+      },
+      pdp: {
+        metrics: [['PDP sessions','806K','+8.4% vs prior period'],['Add-to-cart rate','10.8%','+0.7 pp'],['PDP conversion rate','2.9%','+0.3 pp'],['Product revenue','$2.51M','+11.2% vs prior period']],
+        chartTitle: 'PDP conversion rate', source: 'Analytics · product pages', tooltip: ['2.9%','90-day PDP conversion'],
+        line: 'M0 80 L35 78 L70 82 L105 73 L140 70 L175 65 L210 69 L245 55 L280 58 L315 44 L350 47 L385 33 L420 31', y: 31,
+        tableTitle: 'Questions shaping conversion', tableSource: 'Site search + support', rows: [['Sizing and fit','3,172 searches'],['Materials and care','2,248 questions'],['Dimensions and room fit','1,539 questions'],['Compatibility and use','1,261 questions']],
+        action: ['Conversion opportunity','368 high-traffic PDPs have repeated fit, care or compatibility questions. Move the answers beside the variant selector and publish them as structured product fields.']
+      }
+    };
+
+    const demandTabs = [...document.querySelectorAll('.demand-tab')];
+    let renderedDemandKey = 'search';
+    let demandSwapTimer;
+
+    function commitDemandView(key) {
+      const view = demandViews[key];
+      view.metrics.forEach((metric, index) => {
+        document.getElementById(`kpi-label-${index}`).textContent = metric[0];
+        document.getElementById(`kpi-value-${index}`).textContent = metric[1];
+        document.getElementById(`kpi-delta-${index}`).textContent = metric[2];
+      });
+      document.getElementById('chart-title').textContent = view.chartTitle;
+      document.getElementById('chart-source').textContent = view.source;
+      document.getElementById('chart-line').setAttribute('d', view.line);
+      document.getElementById('chart-area').setAttribute('d', `${view.line} L420 104 L0 104 Z`);
+      document.querySelector('.chart-dot').setAttribute('cy', view.y);
+      document.getElementById('chart-tooltip-value').textContent = view.tooltip[0];
+      document.getElementById('chart-tooltip-label').textContent = view.tooltip[1];
+      document.getElementById('table-title').textContent = view.tableTitle;
+      document.getElementById('table-source').textContent = view.tableSource;
+      document.getElementById('demand-table').innerHTML = view.rows.map(row => `<tr><td>${row[0]}</td><td>${row[1]}</td></tr>`).join('');
+      document.getElementById('action-title').textContent = view.action[0];
+      document.getElementById('action-copy').textContent = view.action[1];
+      renderedDemandKey = key;
+    }
+
+    function renderDemandView(key, { immediate = false } = {}) {
+      if (!demandViews[key]) return;
+      const dashboard = document.querySelector('.commerce-dashboard');
+      demandTabs.forEach(tab => {
+        const selected = tab.dataset.demandView === key;
+        tab.classList.toggle('active', selected);
+        tab.setAttribute('aria-selected', String(selected));
+      });
+
+      if (key === renderedDemandKey && !dashboard.classList.contains('is-switching')) return;
+      clearTimeout(demandSwapTimer);
+      dashboard.classList.remove('view-changed');
+
+      if (reduceMotion || immediate) {
+        dashboard.classList.remove('is-switching');
+        commitDemandView(key);
+        dashboard.setAttribute('aria-busy', 'false');
+        return;
+      }
+
+      dashboard.classList.add('is-switching');
+      dashboard.setAttribute('aria-busy', 'true');
+      demandSwapTimer = setTimeout(() => {
+        commitDemandView(key);
+        dashboard.classList.remove('is-switching');
+        void dashboard.offsetWidth;
+        dashboard.classList.add('view-changed');
+        dashboard.setAttribute('aria-busy', 'false');
+      }, 160);
+    }
+    const demandSection = document.querySelector('.demand');
+    let demandTimer;
+    let demandResumeTimer;
+    let demandVisible = false;
+    let activeDemandView = 0;
+    let demandScrollQueued = false;
+
+    function syncDemandToScroll() {
+      demandScrollQueued = false;
+      if (window.innerWidth <= 980) return;
+      const rect = demandSection.getBoundingClientRect();
+      const travel = Math.max(1, demandSection.offsetHeight - window.innerHeight);
+      const progress = Math.max(0, Math.min(.999, (64 - rect.top) / travel));
+      const nextIndex = Math.min(demandTabs.length - 1, Math.floor(progress * demandTabs.length));
+      if (nextIndex === activeDemandView) return;
+      activeDemandView = nextIndex;
+      renderDemandView(demandTabs[activeDemandView].dataset.demandView);
+    }
+
+    function queueDemandSync() {
+      if (demandScrollQueued) return;
+      demandScrollQueued = true;
+      requestAnimationFrame(syncDemandToScroll);
+    }
+
+    function startDemandStory() {
+      clearInterval(demandTimer);
+      if (reduceMotion || !demandVisible || window.innerWidth > 980) return;
+      demandTimer = setInterval(() => {
+        activeDemandView = (activeDemandView + 1) % demandTabs.length;
+        renderDemandView(demandTabs[activeDemandView].dataset.demandView);
+      }, 4800);
+    }
+    function pauseDemandStory() {
+      clearInterval(demandTimer);
+      clearTimeout(demandResumeTimer);
+      if (!reduceMotion && window.innerWidth <= 980) demandResumeTimer = setTimeout(startDemandStory, 14000);
+    }
+    demandTabs.forEach((tab, index) => tab.addEventListener('click', () => {
+      activeDemandView = index;
+      renderDemandView(tab.dataset.demandView);
+      if (window.innerWidth > 980) {
+        const sectionTop = demandSection.getBoundingClientRect().top + window.scrollY;
+        const travel = Math.max(1, demandSection.offsetHeight - window.innerHeight);
+        window.scrollTo({ top:sectionTop - 64 + travel * ((index + .15) / demandTabs.length), behavior:'smooth' });
+      } else {
+        pauseDemandStory();
+      }
+    }));
+    window.addEventListener('scroll', queueDemandSync, { passive:true });
+    window.addEventListener('resize', queueDemandSync);
+    demandTabs.forEach((tab, index) => tab.setAttribute('aria-selected', String(index === 0)));
+    syncDemandToScroll();
+
+    const storyData = {
+      aesop: { image:'./carve-ecom-assets/aesop-blue-chamomile-cutout.png', alt:'Upright white crinkled skincare tube with black Aesop lettering, dense black-and-white label copy and a wide black flip cap.', contain:true, count:'01 / 03', brand:'Aesop · Skin care', name:'Blue Chamomile Facial Hydrating Masque', tags:['60 mL','30 min → overnight','Travel companion'], product:'A discreet, transparent gel masque that can travel from takeoff to morning.', brandRead:'Precise, sensory and discreet—Aesop makes the ritual feel considered.', buyer:'Someone who wants to arrive feeling like themselves after hours of cabin air.', decision:'Serious hydration wins when it becomes an easy, private travel ritual.' },
+      muuto: { image:'./carve-ecom-assets/muuto-outline-sofa-cognac-cutout-wide.png', alt:'Front three-quarter view of a cognac leather three-seat sofa with slim rectangular arms, two loose back cushions, two seat cushions and slender black metal legs.', contain:true, count:'02 / 03', brand:'Muuto · Outline Series', name:'Outline Sofa 3-Seater', tags:['220 × 84 × 71 cm','62 cm seat depth','Refine Leather · Cognac'], product:'A 220 cm leather sofa with a slim architectural outline, deep seat and soft cold-foam cushioning.', brandRead:'Muuto keeps the exterior calm and precise, then lets proportion, comfort and material carry the character.', buyer:'Someone who wants a serious place to lounge without surrendering the whole room to it.', decision:'Deep 62 cm seating and soft cushioning inside; a visually light 84 cm-deep profile outside.' },
+      on: { image:'./carve-ecom-assets/on-cloudmonster-2.webp', alt:'On Cloudmonster 2 road-running shoe in black', contain:true, count:'03 / 03', brand:'On · Road running', name:'Cloudmonster 2', tags:['300 g','6 mm drop','Easy → uptempo'], product:'Maximum CloudTec® protection shaped into a rhythmic, forward-rolling ride.', brandRead:'Visible engineering and playful proportions make performance feel optimistic.', buyer:'A runner with real miles to cover who refuses to let cushioning feel lifeless.', decision:'Soft landings earn the choice when the shoe still feels ready to move.' }
+    };
+    const storySteps = [...document.querySelectorAll('.scroll-step')];
+    const storyMedia = document.getElementById('story-media');
+    const storyImage = document.getElementById('story-image');
+    let activeStoryKey = 'aesop';
+    let storySwapTimer;
+    function renderStory(key) {
+      if (activeStoryKey === key) return;
+      activeStoryKey = key;
+      const story = storyData[key];
+      storySteps.forEach(step => step.classList.toggle('active', step.dataset.storyKey === key));
+      storyMedia.classList.add('swapping');
+      clearTimeout(storySwapTimer);
+      storySwapTimer = setTimeout(() => {
+        storyImage.src = story.image;
+        storyImage.alt = story.alt;
+        storyMedia.classList.toggle('contain', story.contain);
+        document.getElementById('story-count').textContent = story.count;
+        document.getElementById('story-brand').textContent = story.brand;
+        document.getElementById('story-name').textContent = story.name;
+        document.getElementById('story-tags').innerHTML = story.tags.map(tag => `<span>${tag}</span>`).join('');
+        document.getElementById('story-product-read').textContent = story.product;
+        document.getElementById('story-brand-read').textContent = story.brandRead;
+        document.getElementById('story-buyer-read').textContent = story.buyer;
+        document.getElementById('story-decision-read').textContent = story.decision;
+        requestAnimationFrame(() => storyMedia.classList.remove('swapping'));
+      }, 150);
+    }
+    storySteps.forEach(step => step.addEventListener('click', event => {
+      if (!event.target.closest('a')) renderStory(step.dataset.storyKey);
+    }));
+    let storyScrollQueued = false;
+    function syncStoryToScroll() {
+      storyScrollQueued = false;
+      const readingLine = window.innerHeight * .46;
+      let closestStep = storySteps[0];
+      let closestDistance = Infinity;
+      storySteps.forEach(step => {
+        const rect = step.getBoundingClientRect();
+        const distance = rect.top <= readingLine && rect.bottom >= readingLine
+          ? 0
+          : Math.min(Math.abs(rect.top - readingLine), Math.abs(rect.bottom - readingLine));
+        if (distance < closestDistance) {
+          closestDistance = distance;
+          closestStep = step;
+        }
+      });
+      renderStory(closestStep.dataset.storyKey);
+    }
+    function queueStorySync() {
+      if (storyScrollQueued) return;
+      storyScrollQueued = true;
+      requestAnimationFrame(syncStoryToScroll);
+    }
+    window.addEventListener('scroll', queueStorySync, { passive:true });
+    window.addEventListener('resize', queueStorySync);
+
+    const revealObserver = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          revealObserver.unobserve(entry.target);
+        }
+      });
+    }, { threshold:.12 });
+    document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+
+    if (!reduceMotion) {
+      document.body.classList.add('motion-ready');
+      const motionObserver = new IntersectionObserver(entries => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) entry.target.classList.add('motion-in');
+          if (entry.target.classList.contains('demand')) {
+            demandVisible = entry.isIntersecting;
+            if (demandVisible) startDemandStory();
+            else clearInterval(demandTimer);
+          }
+        });
+      }, { threshold:.18 });
+      document.querySelectorAll('.channel-bar,.demand,.final').forEach(section => motionObserver.observe(section));
+    }
+  </script>
+</body>
+</html>
