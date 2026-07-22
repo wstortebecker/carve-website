@@ -7,15 +7,22 @@
   <meta name="description" content="The complete Carve product-data engine, priced by the size of your Shopify catalog.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@1,300;1,400&amp;family=DM+Sans:wght@300;400;500;600&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
   <style>
+    @font-face {
+      font-family:'Redaction';
+      src:url('/fonts/redaction/redaction-regular.otf') format('opentype');
+      font-style:normal;
+      font-weight:400;
+      font-display:swap;
+    }
     :root {
       --cream:#f3ede4; --cream-2:#e8dfd3; --paper:#fffdf8; --paper-2:#faf6ef;
       --ink:#1b1511; --ink-2:#28201b; --copy:#584d45; --quiet:#7c6e64;
       --line:rgba(28,22,18,.13); --line-strong:rgba(28,22,18,.24);
       --terra:#aa5834; --terra-dark:#7d3d26; --terra-soft:#ead2c2;
       --green:#39735a; --green-soft:#deebe3;
-      --serif:'Cormorant Garamond',Georgia,serif;
+      --serif:'Redaction',Georgia,serif;
       --sans:'DM Sans',-apple-system,BlinkMacSystemFont,sans-serif;
       --mono:'JetBrains Mono',monospace;
       --shadow:0 26px 70px rgba(49,33,23,.10);
@@ -196,6 +203,13 @@
       .footer-grid { grid-template-columns:1fr 1fr; gap:35px }.footer-brand { grid-column:1/-1 }.footer-bottom { align-items:flex-start; gap:20px }
     }
     @media(prefers-reduced-motion:reduce) { html { scroll-behavior:auto } *,*::before,*::after { transition:none!important; animation:none!important } }
+    .hero h1,
+    .price strong,
+    .guarantee h2,
+    .engine-story h2,
+    .comparison h2,
+    .faq h2,
+    .cta-panel h2 { font-style:normal; font-weight:400 }
   </style>
 </head>
 <body>
