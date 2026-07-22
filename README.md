@@ -84,6 +84,12 @@ the platform repository.
 
 ## The design system
 
+The complete platform design guidelines are mirrored in
+**`docs/DESIGN-SYSTEM.md`** so website work carries the same readability,
+typography, interaction and anti-pattern rules as `carveplatform`. The light
+marketing palette and product-led direction documented below remain the
+presentation authority for this website.
+
 `src/app/globals.css` is the source of truth. It defines the full token set as
 CSS custom properties — warm parchment backgrounds, terracotta accent, warm
 near-black text, the paper-grain texture, and the type scale (Cormorant Garamond
