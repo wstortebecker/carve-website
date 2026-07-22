@@ -4,11 +4,11 @@ import "./globals.css";
 export const metadata: Metadata = {
   metadataBase: new URL('https://carve.ac'),
   title: {
-    default: "Carve — Organic visibility, on autopilot",
+    default: "Carve — Product data that gets products found and chosen",
     template: "%s | Carve",
   },
   description:
-    "Carve optimizes your Shopify catalog for Google and AI search, ships it to your store, and keeps it ranked — organic visibility on autopilot.",
+    "Carve understands your products, buyers and brand, then turns that understanding into product data Google can rank, AI agents can reason over and shoppers can buy from.",
   openGraph: {
     type: 'website',
     siteName: 'Carve',

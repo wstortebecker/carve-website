@@ -6,7 +6,7 @@ export function OrganizationJsonLd() {
     legalName: 'Carve Labs AB',
     url: 'https://carve.ac',
     logo: 'https://carve.ac/brand/icon-512.png',
-    description: 'Carve optimizes your Shopify catalog for Google and AI search, ships it to your store, and keeps it ranked — organic visibility on autopilot.',
+    description: 'Carve turns product understanding into product data that helps Shopify brands get found, understood and chosen.',
   };
 
   return (
@@ -25,12 +25,12 @@ export function SoftwareApplicationJsonLd() {
     applicationCategory: 'BusinessApplication',
     operatingSystem: 'Web',
     url: 'https://carve.ac',
-    description: 'Carve optimizes your Shopify catalog for Google and AI search — product pages, feed, and collections — ships it to your store, and proves the lift in your own analytics.',
+    description: 'Carve understands products, buyers and brands, improves product data, ships approved changes to Shopify and learns from search and conversion performance.',
     offers: {
       '@type': 'Offer',
       price: '0',
       priceCurrency: 'USD',
-      description: 'Free tier — up to 100 products. Paid plans from $199/month.',
+      description: 'Free tier for up to 100 active products. Paid plans from $499/month.',
     },
   };
 

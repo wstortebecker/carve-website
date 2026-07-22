@@ -1,16 +1,9 @@
-import { PlgNav } from '@/components/plg/nav';
-import { PlgFooter } from '@/components/plg/footer';
+import { MarketingChrome } from '@/components/marketing/marketing-chrome';
 
 export default function MarketingLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  return (
-    <>
-      <PlgNav />
-      <main>{children}</main>
-      <PlgFooter />
-    </>
-  );
+  return <MarketingChrome>{children}</MarketingChrome>;
 }

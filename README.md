@@ -17,7 +17,7 @@ npm run dev
 ```
 
 Open http://localhost:3000. No environment variables are required — the site
-runs as-is. (See `.env.example` for the only two optional overrides.)
+runs as-is. See `.env.example` for the optional CMS and platform URL overrides.
 
 To produce a production build:
 
@@ -55,7 +55,9 @@ src/
       blog/                 Blog index + [slug] article pages (Sanity-backed)
       insights/             Insights index + [slug] pages (Sanity-backed)
       privacy/  terms/      Legal
+  content/marketing/        Locked homepage, How it works and pricing documents
   components/
+    marketing/              Standalone renderer and marketing route chrome
     plg/                    Marketing components — nav, footer, hero proof, FAQ, etc.
     animations/             Scroll-reveal + catalog-transform animation components
     brand/orb-mark.tsx      The Carve orb + wordmark lock-up component
@@ -70,7 +72,13 @@ public/
                             OG/social cards, and carve-brand-guidelines.pdf
   images/                   Editorial photography
   logos/                    Partner/integration logos (Shopify, Google, OpenAI, …)
+  marketing-assets/         Product imagery and assets used by the locked pages
 ```
+
+The homepage, How it works and pricing pages intentionally preserve the locked
+design documents in `src/content/marketing`. This keeps the approved visuals and
+interactions identical while the standalone website evolves independently from
+the platform repository.
 
 ---
 
